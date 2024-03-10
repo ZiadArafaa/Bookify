@@ -1,0 +1,78 @@
+﻿@model ApplicationUserFormViewModel
+@{
+    ViewData["Title"] = string.IsNullOrEmpty(Model.Id) ? "Add User" : "Edit User";
+}
+
+<style>
+    .select2-container {
+        z-index: 9999; /* Adjust the value as needed */
+        /* width: 100% !important; */
+        width: auto !important; /* Set width to auto */
+        min-width: 100%; /* Ensure minimum width is 100% */
+    }
+</style>
+
+
+<form asp-action="@(string.IsNullOrEmpty(Model.Id) ? "Create":"Edit")"
+      data-ajax="true"
+      data-ajax-method="post"
+      data-ajax-begin="OnModelBegin"
+      data-ajax-success="OnModelSuccess"
+      data-ajax-failure="OnModelFailure"
+      data-ajax-complete="OnModelComplete">
+    <div class="row">
+        <div class="form-floating p-2 mb-3 col-sm-6">
+            <input type="text" class=" form-control " asp-for="FirstName" placeholder="First Name" />
+            <label asp-for="FirstName">First Name</label>
+            <span asp-validation-for="FirstName" class="text-danger"></span>
+        </div>
+        <div class="form-floating p-2 mb-3 col-sm-6">
+            <input type="text" class=" form-control" asp-for="LastName" placeholder="Last Name" />
+            <label asp-for="LastName">Last Name</label>
+            <span asp-validation-for="LastName" class="text-danger"></span>
+        </div>
+        <div class="form-floating p-2 mb-3 col-sm-6">
+            <input type="text" class=" form-control" asp-for="UserName" placeholder="Username" />
+            <label asp-for="UserName">Username</label>
+            <span asp-validation-for="UserName" class="text-danger"></span>
+        </div>
+        <div class="form-floating p-2 mb-3 col-sm-6">
+            <input type="email" class=" form-control" asp-for="Email" placeholder="Email" />
+            <label asp-for="Email">Email</label>
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+        @if (string.IsNullOrEmpty(Model.Id))
+        {
+            <div class="form-floating p-2 mb-3 col-sm-6">
+                <input type="password" class=" form-control" asp-for="Password" placeholder="Password" />
+                <label asp-for="Password">Password</label>
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+            <div class="form-floating p-2 mb-3 col-sm-6">
+                <input type="password" class=" form-control" asp-for="ConfirmPassword" placeholder="Confirm password" />
+                <label asp-for="ConfirmPassword">Confirm password</label>
+                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+            </div>
+        }
+        <div class="row">
+            <div class="col">
+                <div class="mb-3 col-sm-8">
+                    <div class="row">
+                        <label asp-for="SelectedRoles">Select Roles</label>
+                    </div>
+                    <select class="form-select js-select2" asp-for="SelectedRoles" asp-items="@Model.Roles"
+                            data-placeholder="Select Roles">
+                        <option value=""></option>
+                    </select>
+                    <span asp-validation-for="SelectedRoles" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (!string.IsNullOrEmpty(Model.Id))
+    {
+        <input type="hidden" asp-for="Id" />
+    }
+    <partial name="_ModalFooter" />
+</form>

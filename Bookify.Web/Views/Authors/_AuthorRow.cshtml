@@ -1,0 +1,22 @@
+﻿@model AuthorViewModel
+<tr>
+    <td>@Model.Name</td>
+    <td>@Model.CreateOn.ToString("dd, MMM yyyy")</td>
+    <td class="js-update-on">@(Model.LastUpdatedOn is null ? string.Empty : ((DateTime)Model.LastUpdatedOn).ToString("dd, MMM yyyy"))</td>
+    <td>
+        <span class="badge bg-label-@(Model.IsDeleted ? "danger" : "success") js-status">
+            @(Model.IsDeleted ? "Deleted" : "Available")
+        </span>
+    </td>
+    <td>
+        <div class="dropdown">
+            <a class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+                <i class="bx bx-dots-vertical-rounded"></i>
+            </a>
+            <div class="dropdown-menu">
+                <a class="dropdown-item js-render-modal" href="javascript:;" data-updated="true" data-title="Edit Author" data-url="/Authors/Edit/@Model.Id"><i class="bx bx-edit-alt me-1"></i>Edit</a>
+                <a class="dropdown-item js-toggle-status" href="javascript:;" data-url="/Authors/ToggleStatus/@Model.Id"><i class="bx bx-trash me-1"></i>Toggle Status</a>
+            </div>
+        </div>
+    </td>
+</tr>

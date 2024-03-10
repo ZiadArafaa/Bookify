@@ -1,0 +1,23 @@
+﻿@model AuthorFormViewModel
+
+<form asp-controller="Authors" asp-action="@(Model is null ? "Create": "Edit")"
+      data-ajax="true"
+      data-ajax-method="post"
+      data-ajax-begin="OnModelBegin"
+      data-ajax-success="OnModelSuccess(data)"
+      data-ajax-failure="OnModelFailure"
+      data-ajax-complete="OnModelComplete">
+
+    <div class="form-floating mb-3 col-sm-4">
+        <input type="text" class="form-control" asp-for="Name" placeholder="Name" />
+        <label asp-for="Name">Author</label>
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    @if(Model?.Id > 0)
+    {
+        <input asp-for="Id" type="hidden" />
+    }
+
+    <partial name="_ModalFooter" />
+</form>

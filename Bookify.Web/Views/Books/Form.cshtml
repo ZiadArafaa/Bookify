@@ -1,0 +1,122 @@
+﻿@model BookFormViewModel
+@{
+    ViewData["Title"] = !Model.Id.Equals(0) ? "Edit Book" : "Add Book";
+}
+
+@section Styles
+{
+    <link rel="stylesheet" href="~/lib/select2/css/select2.min.css" />
+    <link rel="stylesheet" href="~/lib/bootstrap-datepicker/css/bootstrap-datepicker.min.css" />
+}
+
+<div class="card mt-2 p-sm-4 container-fluid">
+    <div class="card-header py-0">
+        <h5>@(!Model.Id.Equals(0) ? "Edit Book" : "Add Book")</h5>
+    </div>
+    <div class="card-body">
+        <form asp-controller="Books" method="post" enctype="multipart/form-data">
+
+            @if (!Model.Id.Equals(0))
+            {
+                <input type="hidden" asp-for="Id" />
+            }
+            <div class="row mx-0">
+                <div class="mb-3 col-sm-8">
+                    <img src=@(Model.ImageUrl ?? "/images/books/no-book.jpg") class="img-thumbnail"
+                         alt="Book Image" id="renderBookImage" style="height: 200px;">
+                    <div class="from-text m-1">Image must be .jpg, .jpeg, .png and size not more than 2MB.</div>
+                </div>
+            </div>
+            <div class="row mx-0">
+                <div class="col">
+                    <div class="form-floating mb-3 col-sm-8">
+                        <input type="text" class=" form-control" asp-for="Title" placeholder="Title" />
+                        <label asp-for="Title">Title</label>
+                        <span asp-validation-for="Title" class="text-danger"></span>
+                    </div>
+                    <div class="form-floating mb-3 col-sm-8">
+                        <input type="text" class=" form-control" asp-for="Publisher" placeholder="Publisher" />
+                        <label asp-for="Publisher">Publisher</label>
+                        <span asp-validation-for="Publisher" class="text-danger"></span>
+                    </div>
+                    <div class="form-floating mb-3 col-sm-8">
+                        <input type="text" class=" form-control js-datepicker" asp-for="PublishingDate" placeholder="Publishing Date" />
+                        <label asp-for="PublishingDate">Publishing Date</label>
+                        <span asp-validation-for="PublishingDate" class="text-danger"></span>
+                    </div>
+                    <div class="form-floating mb-3 col-sm-8">
+                        <input type="text" class="form-control" asp-for="Hall" placeholder="Hall" />
+                        <label asp-for="Hall">Hall</label>
+                        <span asp-validation-for="Hall" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3 col-sm-8">
+                        <div class="row">
+                            <label asp-for="AuthorId">Authors</label>
+                        </div>
+                        <select class="form-select js-select2" asp-for="AuthorId" asp-items="@Model.Authors"
+                                data-placeholder="Select an author">
+                            <option value=""></option>
+                        </select>
+                        <span asp-validation-for="AuthorId" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3 col-sm-8">
+                        <div class="row">
+                            <label asp-for="SelectedCategories">Categories</label>
+                        </div>
+                        <select class="form-select js-select2" asp-for="SelectedCategories" asp-items="@Model.Categories"
+                                data-placeholder="Select categories">
+                            <option value=""></option>
+                        </select>
+                        <span asp-validation-for="SelectedCategories" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3 col-sm-8">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" asp-for="IsAvailableForRental" />
+                            <label class="form-check-label" asp-for="IsAvailableForRental"></label>
+                            <span asp-validation-for="IsAvailableForRental"></span>
+                        </div>
+                    </div>
+                    <div class="mb-3 col-sm-8">
+                        <label asp-for="Image"></label>
+                        <input type="file" class=" form-control" asp-for="Image" placeholder="Image"
+                               onchange="document.getElementById('renderBookImage').src = window.URL.createObjectURL(files[0])" accept=".jpg,.png,.jpeg" />
+                        <span asp-validation-for="Image" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="mb-3">
+                        <div class="form-floating">
+                            <textarea class=" form-control js-textarea" placeholder="Leave a Description here" asp-for="Description"></textarea>
+                            <label asp-for="Description">Description</label>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mx-0 mt-3">
+                <div class="col-sm-8">
+                    <button type="submit" class="btn btn-primary">
+                        Save
+                        <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                    </button>
+                    <a class="btn btn-light ms-2" asp-action="Index">
+                        Cancel
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section PluginScripts
+{
+    <script src="~/lib/select2/js/select2.min.js"></script>
+    <script src="~/lib/tinymce/tinymce.min.js"></script>
+    <script src="~/lib/bootstrap-datepicker/js/bootstrap-datepicker.min.js"></script>
+    <script src="~/lib/moment.js/moment.min.js"></script>
+}
+
+@section Scripts
+{
+    <partial name="_ValidationScriptsPartial" />
+}
