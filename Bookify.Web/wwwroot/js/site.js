@@ -178,7 +178,8 @@ $(document).ready(function () {
     if ($(".js-datepicker").length > 0) {
         $(".js-datepicker").datepicker({
             format: 'd , MM yyyy',
-            endDate: new Date()
+            endDate: new Date(),
+            orientation: 'top'
         });
     }
 
@@ -198,16 +199,11 @@ $(document).ready(function () {
             content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:16px }'
         });
     }
-
+    
     $('form').on('submit', function () {
-        if ($('.js-textarea').length > 0) {
-            $('.js-textarea').each(function () {
-                var input = $(this);
-                var content = tinyMCE.get(input.attr('id')).getContent();
-                input.val(content);
-            });
-        }
+        
         var isValid = $(this).valid();
+
         if (isValid) {
             DisableButtonSubmit()
         };

@@ -1,0 +1,153 @@
+﻿@model SubscriperFormViewModel
+@{
+    ViewBag.Title = "Form";
+}
+
+<div class="container">
+    <div class="card">
+        <div class="card-body">
+            <div class="container">
+                <form method="post" asp-action="Create" asp-controller="Subscripers">
+                    <div class="row mb-3">
+                        <div class="col-4 align-self-center"><label>Profile<span class="text-danger">*</span></label></div>
+                        <div class="col">
+
+                            <img src="/images/image-placeholder.jpg" class="img-thumbnail" alt="Subscriper Image" id="renderImage" style="height: 200px;">
+                            <div class="from-text">Image must be .jpg, .jpeg, .png and size not more than 2MB.</div>
+                            <input type="file" class="form-control" asp-for="Image"
+                                   onchange="document.getElementById('renderImage').src = window.URL.createObjectURL(files[0])" />
+                            <span asp-validation-for="Image"></span>
+
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-4 align-self-center"><label>Full Name<span class="text-danger">*</span></label></div>
+                        <div class="col">
+                            <div class="row">
+                                <div class="col form-floating">
+                                    <input class="form-control" asp-for="FirstName" type="text" />
+                                    <label asp-for="FirstName"></label>
+                                    <span asp-validation-for="FirstName"></span>
+                                </div>
+                                <div class="col form-floating">
+                                    <input class="form-control" asp-for="LastName" type="text" />
+                                    <label asp-for="LastName"></label>
+                                    <span asp-validation-for="LastName"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-4 align-self-center"><label>Contacts<span class="text-danger">*</span></label></div>
+                        <div class="col">
+                            <div class="row">
+                                <div class="col form-floating">
+                                    <input class="form-control" type="tel" asp-for="MobileNumber" />
+                                    <label asp-for="MobileNumber"></label>
+                                    <span asp-validation-for="MobileNumber"></span>
+                                </div>
+                                <div class="col form-floating">
+                                    <input class="form-control" type="email" asp-for="Email" />
+                                    <label asp-for="Email"></label>
+                                    <span asp-validation-for="Email"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-4 align-self-center"><label>National ID<span class="text-danger">*</span></label></div>
+                        <div class="col">
+                            <div class="row">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" asp-for="NationalId" />
+                                    <label asp-for="NationalId"></label>
+                                    <span asp-validation-for="NationalId"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-4 align-self-center"><label>Date Of Birth<span class="text-danger">*</span></label></div>
+                        <div class="col">
+                            <div class="row">
+                                <div class="form-floating">
+                                    <input type="date" class="form-control" asp-for="BirthOfDate" />
+                                    <label asp-for="BirthOfDate"></label>
+                                    <span asp-validation-for="BirthOfDate"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-4 align-self-center"><label>Governorate/Area<span class="text-danger">*</span></label></div>
+                        <div class="col">
+                            <div class="row">
+                                <div class="col-6">
+                                    <select class="form-select js-select2" id="onSelect" aria-label="Default select example" asp-for="GovernorateId"
+                                            asp-items="@Model.Governorates">
+                                        <option value=""></option>
+                                    </select>
+                                    <span asp-validation-for="GovernorateId" class="text-danger"></span>
+                                </div>
+                                <div class="col-6 ">
+                                    <select class="form-select js-select2" aria-label="Default select example" asp-for="AreaId"
+                                            asp-items="@Model.Areas">
+                                        <option value=""></option>
+                                    </select>
+                                    <span asp-validation-for="AreaId"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-4 align-self-center "><label>Address<span class="text-danger">*</span></label></div>
+                        <div class="col">
+                            <div class="row">
+                                <div class="form-floating">
+                                    <textarea class="form-control" asp-for="Address"></textarea>
+                                    <label asp-for="Address"></label>
+                                    <span asp-validation-for="Address"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-5">
+                        <div class="col-4 align-self-center "><label>Has Whatsapp? <span class="text-danger">*</span></label></div>
+                        <div class="col ms-3">
+                            <div class="row">
+                                <div class="form-check">
+                                    <input asp-for="HasWhatsApp" class="form-check-input" type="checkbox" />
+                                    <label class="form-check-label" asp-for="HasWhatsApp">Yes</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-auto">
+                            <button class="btn btn-primary" type="submit">Save</button>
+                        </div>
+                        <div class="col-auto ps-0">
+                            <a class="btn btn-secondary text-white" asp-action="" asp-controller="">Cancel</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/lib/datepicker/datepicker.min.js"></script>
+    <script src="~/lib/select2/js/select2.min.js"></script>
+    <script>
+        $(document).ready(function () {
+                
+        });
+    </script>
+}
+@section Styles {
+    <link rel="stylesheet" href="~/lib/select2/css/select2.min.css" />
+    <link rel="stylesheet" href="~/lib/datepicker/datepicker.css" />
+}

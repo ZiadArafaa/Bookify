@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.EntityFrameworkCore;
 
 namespace Bookify.Web.Areas.Identity.Pages.Account
 {
@@ -47,12 +48,15 @@ namespace Bookify.Web.Areas.Identity.Pages.Account
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
             [Required]
-            [EmailAddress]
-            public string Email { get; set; }
+            public string Username { get; set; }
         }
 
-        public void OnGet()
+        public void OnGet(string Username)
         {
+            Input = new()
+            {
+                Username = Username
+            };
         }
 
         public async Task<IActionResult> OnPostAsync()
@@ -62,7 +66,9 @@ namespace Bookify.Web.Areas.Identity.Pages.Account
                 return Page();
             }
 
-            var user = await _userManager.FindByEmailAsync(Input.Email);
+            var user = await _userManager.Users
+                .Where(u => (u.UserName == Input.Username || u.Email == Input.Username) && !u.IsDeleted).SingleOrDefaultAsync();
+
             if (user == null)
             {
                 ModelState.AddModelError(string.Empty, "Verification email sent. Please check your email.");
@@ -72,15 +78,17 @@ namespace Bookify.Web.Areas.Identity.Pages.Account
             var userId = await _userManager.GetUserIdAsync(user);
             var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
             code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+
             var callbackUrl = Url.Page(
                 "/Account/ConfirmEmail",
                 pageHandler: null,
                 values: new { userId = userId, code = code },
                 protocol: Request.Scheme);
             await _emailSender.SendEmailAsync(
-                Input.Email,
+                user.Email,
                 "Confirm your email",
                 $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+
 
             ModelState.AddModelError(string.Empty, "Verification email sent. Please check your email.");
             return Page();

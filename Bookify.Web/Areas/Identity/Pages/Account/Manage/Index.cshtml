@@ -1,30 +1,162 @@
 ﻿@page
+@inject IWebHostEnvironment _webHostEnvironment
 @model IndexModel
 @{
     ViewData["Title"] = "Profile";
-    ViewData["ActivePage"] = ManageNavPages.Index;
+    Layout = "/Views/Shared/_Layout.cshtml";
+
+    var imageUserUrl =
+    System.IO.Path.Combine($"{_webHostEnvironment.WebRootPath}/images/users", $"{User.FindFirst(ClaimTypes.NameIdentifier)!.Value}.jpg");
+
+    imageUserUrl = System.IO.File.Exists(imageUserUrl)
+    ? $"/images/users/{User.FindFirst(ClaimTypes.NameIdentifier)!.Value}.jpg" : "/assets/images/avatar.png";
 }
 
-<h3>@ViewData["Title"]</h3>
-<partial name="_StatusMessage" for="StatusMessage" />
-<div class="row">
-    <div class="col-md-6">
-        <form id="profile-form" method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-floating">
-                <input asp-for="Username" class="form-control" disabled />
-                <label asp-for="Username" class="form-label"></label>
+<div b-6wupeiagz9="" class="container mt-5">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-auto p-0">
+                            <a data-fslightbox href="@imageUserUrl">
+                                <img src="@imageUserUrl" class="rounded d-block" alt="User Image" style="height: 50px;">
+                            </a>
+
+                        </div>
+                        <div class="col p-0">
+                            <div class="flex-grow-1">
+                                <!--begin::Title-->
+                                <div class="d-flex justify-content-between align-items-start flex-wrap">
+                                    <!--begin::User-->
+                                    <div class="d-flex flex-column">
+                                        <!--begin::Name-->
+                                        <div class="d-flex align-items-center">
+                                            <div class="col">
+                                                <p class="text-gray-900 text-hover-primary fs-8 m-0">
+                                                    @User.FindFirst(ClaimTypes.GivenName)!.Value
+                                                </p>
+                                                <span class="text-warning">@User.FindFirst(ClaimTypes.Email)!.Value</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!--end::Actions-->
+                                </div>
+                                <!--end::Title-->
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="form-floating">
-                <input asp-for="Input.PhoneNumber" class="form-control" />
-                <label asp-for="Input.PhoneNumber" class="form-label"></label>
-                <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
+        </div>
+
+        <div class="row mt-5">
+            <div class="card">
+                <div class="card-body">
+                    <div class="col">
+                        <div class="row">
+                            <div class="row">
+                                <div class="col">
+                                </div>
+                                <div class="col-auto">
+                                    <div class="row">
+                                        <span class="badge bg-white rounded-pill"><button type="button" id="btnDismiss" class="btn-close" aria-label="Close"></button></span>
+                                    </div>
+                                    <div class="row">
+                                        <a class="click-img" href="#">
+                                            <img src="@imageUserUrl" class="rounded mx-auto d-block js-dismiss" id="renderImage" alt="User Image" style="height: 200px;" />
+                                        </a>
+                                        <div class="text-center">
+                                            <span asp-validation-for="Input.Image" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                </div>
+                            </div>
+                        </div>
+                        <form method="post" enctype="multipart/form-data">
+                            @* hidden input *@
+                            <input asp-for="Input.Remove" type="hidden" id="removeBtn" />
+                            <input type="file" class="d-none" id="FileImage" asp-for="Input.Image" 
+                                   onchange="document.getElementById('renderImage').src = window.URL.createObjectURL(files[0])" accept=".jpg,.png,.jpeg" />
+                            <div class="row mt-2">
+                                <partial name="_StatusMessage" for="StatusMessage" />
+                                <div class="row mb-2">
+                                    <label asp-for="Input.PhoneNumber"></label>
+                                    <input type="text" class="form-control" asp-for="Input.PhoneNumber" />
+                                    <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
+                                </div>
+                                <div class="row mb-2">
+                                    <label asp-for="Input.UserName"></label>
+                                    <input type="text" class="form-control" asp-for="Input.UserName" />
+                                    <span asp-validation-for="Input.UserName" class="text-danger"></span>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="container p-0">
+                                        <div class="row">
+                                            <div class="col-auto pe-0">
+                                                <button type="submit" class="btn btn-primary">
+                                                    Save
+                                                    <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                                                </button>
+                                            </div>
+                                            <div class="col ps-0">
+                                                <a class="btn btn-light" asp-controller="Home" asp-action="Index">
+                                                    Cancel
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
-            <button id="update-profile-button" type="submit" class="w-100 btn btn-lg btn-primary">Save</button>
-        </form>
+        </div>
+        <div class="row mt-2">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col">
+                            <div class="col-4">
+                                <div class="row">
+                                    <div class="col-auto align-self-center ">Email</div>
+                                    <div class="col">
+                                        <input type="email" class="form-control" value="@User.FindFirst(ClaimTypes.Email)!.Value" disabled/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <a asp-page="./email" class="btn btn-primary text-white">Change</a>
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col">
+                            <div class="col-4">
+                                <div class="row">
+                                    <div class="col-auto align-self-center px-0">Password</div>
+                                    <div class="col">
+                                        <input type="password" class="form-control" value="#$%@@%^&%##@@!%" disabled />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <a class="btn btn-primary text-white" asp-area="Identity" asp-page="./ChangePassword">Change</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script src="~/lib/bootstrap/js/bootstrap.min.js"></script>
+    <script src="~/lib/fslightbox/index.min.js"></script>
+    <script src="~/js/profile.js" asp-append-version="true"></script>
 }

@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.EntityFrameworkCore;
 
 namespace Bookify.Web.Areas.Identity.Pages.Account
 {
@@ -42,7 +43,6 @@ namespace Bookify.Web.Areas.Identity.Pages.Account
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
             [Required]
-            [EmailAddress]
             public string Email { get; set; }
 
             /// <summary>
@@ -95,7 +95,9 @@ namespace Bookify.Web.Areas.Identity.Pages.Account
                 return Page();
             }
 
-            var user = await _userManager.FindByEmailAsync(Input.Email);
+            var user = await _userManager.Users
+                   .SingleOrDefaultAsync(u => (u.Email == Input.Email || u.UserName == Input.Email) && !u.IsDeleted);
+
             if (user == null)
             {
                 // Don't reveal that the user does not exist

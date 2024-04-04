@@ -3,10 +3,16 @@ using Bookify.Web.Core.Validations;
 using Bookify.Web.Core.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
+using NuGet.Protocol.Plugins;
+using System.Net.Mail;
 using System.Security.Claims;
+using System.Text;
+using System.Text.Encodings.Web;
 
 namespace Bookify.Web.Controllers
 {
@@ -16,12 +22,16 @@ namespace Bookify.Web.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IMapper _mapper;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly IEmailSender _emailSender;
+        private readonly ILogger<UsersController> _logger;
 
-        public UsersController(UserManager<ApplicationUser> userManager, IMapper mapper, RoleManager<IdentityRole> roleManager)
+        public UsersController(UserManager<ApplicationUser> userManager, IMapper mapper, RoleManager<IdentityRole> roleManager, IEmailSender emailSender, ILogger<UsersController> logger)
         {
             _userManager = userManager;
             _mapper = mapper;
             _roleManager = roleManager;
+            _emailSender = emailSender;
+            _logger = logger;
         }
 
         public async Task<IActionResult> Index()
@@ -69,7 +79,6 @@ namespace Bookify.Web.Controllers
                 Email = model.Email,
                 CreatedById = User.FindFirst(ClaimTypes.NameIdentifier)!.Value,
                 CreateOn = DateTime.Now,
-                EmailConfirmed = true
             };
 
             var result = await _userManager.CreateAsync(applicationUser, model.Password);
@@ -83,6 +92,20 @@ namespace Bookify.Web.Controllers
                 viewModel.CreatedBy = await _userManager.Users
                     .Where(u => u.Id == viewModel.CreatedBy)
                     .Select(u => u.UserName).SingleOrDefaultAsync();
+
+                var code = await _userManager.GenerateEmailConfirmationTokenAsync(applicationUser);
+                
+                code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+
+                var callbackUrl = Url.Page(
+                       "/Account/ConfirmEmail",
+                       pageHandler: null,
+                       values: new { area = "Identity", userId = applicationUser.Id, code = code },
+                       protocol: Request.Scheme);
+
+                _logger.LogInformation(callbackUrl);
+                await _emailSender.SendEmailAsync(applicationUser.Email,
+                    "Confirm Your Email", $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl!)}'>clicking here</a>.");
 
                 return PartialView("_UserRow", viewModel);
             }
@@ -218,9 +241,9 @@ namespace Bookify.Web.Controllers
             if (user is null)
                 return NotFound();
 
-            if(await _userManager.IsLockedOutAsync(user))
+            if (await _userManager.IsLockedOutAsync(user))
             {
-                var result = await _userManager.SetLockoutEndDateAsync(user,null);
+                var result = await _userManager.SetLockoutEndDateAsync(user, null);
 
                 if (!result.Succeeded)
                     return BadRequest(string.Join(',', result.Errors.Select(e => e.Description).ToList()));

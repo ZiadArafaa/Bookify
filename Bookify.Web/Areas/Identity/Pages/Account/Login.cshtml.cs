@@ -117,11 +117,11 @@ namespace Bookify.Web.Areas.Identity.Pages.Account
                 var user = await _userManager.Users
                     .SingleOrDefaultAsync(u => (u.Email == Input.Email || u.UserName == Input.Email) && !u.IsDeleted);
 
-                if(user is null)
+                if (user is null)
                 {
                     ModelState.AddModelError(string.Empty, "Invalid login attempt.");
                     return Page();
-                }    
+                }
 
                 var result = await _signInManager.PasswordSignInAsync(user, Input.Password, Input.RememberMe, lockoutOnFailure: true);
 
@@ -138,6 +138,10 @@ namespace Bookify.Web.Areas.Identity.Pages.Account
                 {
                     _logger.LogWarning("User account locked out.");
                     return RedirectToPage(pageName: "./Lockout");
+                }
+                if (result.IsNotAllowed)
+                {
+                    return RedirectToPage("./ResendEmailConfirmation", new { Username = Input.Email });
                 }
                 else
                 {

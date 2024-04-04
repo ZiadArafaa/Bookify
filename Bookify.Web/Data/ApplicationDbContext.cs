@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using NuGet.Protocol;
 
 namespace Bookify.Web.Data
 {
@@ -19,10 +20,19 @@ namespace Bookify.Web.Data
             ModifayAuthor(modelBuilder);
             ModifayBook(modelBuilder);
             ModifayBookCopy(modelBuilder);
+            ModifayGovernorate(modelBuilder);
+            ModifayArea(modelBuilder);
+            ModifaySubscriber(modelBuilder);
 
             modelBuilder.Entity<BookCategory>()
                 .ToTable(name: "BookCategories", schema: "Library")
                 .HasKey(k => new { k.BookId, k.CategoryId }).IsClustered();
+
+            var foreignKeys = modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys())
+                 .Where(fk => fk.DeleteBehavior == DeleteBehavior.Cascade && !fk.IsOwnership).ToList();
+
+            foreach (var foreignKey in foreignKeys)
+                foreignKey.DeleteBehavior = DeleteBehavior.Restrict;
         }
         private void ModifayIdentity(ModelBuilder modelBuilder)
         {
@@ -30,6 +40,7 @@ namespace Bookify.Web.Data
             user.Property(p => p.CreateOn).HasDefaultValueSql("GETDATE()");
             user.HasIndex(p => p.Email).IsUnique().HasFilter(null);
             user.HasIndex(p => p.UserName).IsUnique().HasFilter(null);
+
             modelBuilder.Entity<IdentityRole>().ToTable("Roles", "Auth");
             modelBuilder.Entity<IdentityUserRole<string>>().ToTable("UserRoles", "Auth");
             modelBuilder.Entity<IdentityUserToken<string>>().ToTable("UserTokens", "Auth");
@@ -69,6 +80,28 @@ namespace Bookify.Web.Data
                 .IncrementsBy(10);
 
             Copy.Property(c => c.SerialNumber).HasDefaultValueSql("Next Value For shared.SerialNumber");
+        }
+        private void ModifayGovernorate(ModelBuilder modelBuilder)
+        {
+            var model = modelBuilder.Entity<Governorate>().ToTable("Governorates", "Location");
+            model.HasKey(g => g.Id);
+            model.HasIndex(g => g.Name).IsUnique().HasFilter(null);
+        }
+        private void ModifayArea(ModelBuilder modelBuilder)
+        {
+            var model = modelBuilder.Entity<Area>().ToTable("Areas", "Location");
+            model.HasKey(a => a.Id);
+            model.HasIndex(a => new { a.Name, a.GovernorateId });
+        }
+        private void ModifaySubscriber(ModelBuilder modelBuilder)
+        {
+            var model = modelBuilder.Entity<Subscriper>().ToTable("Subscripers", "Client");
+
+            model.HasKey(s => s.Id);
+            model.HasIndex(s => s.NationalId).IsUnique().HasFilter(null);
+            model.HasIndex(s => s.Email).IsUnique().HasFilter(null);
+            model.HasIndex(s => new { s.FirstName, s.LastName }).IsUnique().HasFilter(null);
+            model.HasIndex(s => s.MobileNumber).IsUnique().HasFilter(null);
         }
     }
 }

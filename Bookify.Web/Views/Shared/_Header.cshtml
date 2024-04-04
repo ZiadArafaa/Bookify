@@ -1,4 +1,12 @@
 ﻿@inject SignInManager<ApplicationUser> SignInManager
+@inject IWebHostEnvironment _webHostEnvironment
+@{
+    var imageUserUrl =
+     System.IO.Path.Combine($"{_webHostEnvironment.WebRootPath}/images/users", $"{User.FindFirst(ClaimTypes.NameIdentifier)!.Value}.jpg");
+
+    imageUserUrl = System.IO.File.Exists(imageUserUrl)
+    ? $"/images/users/{User.FindFirst(ClaimTypes.NameIdentifier)!.Value}.jpg" : "/assets/images/avatar.png";
+}
 @if (SignInManager.IsSignedIn(User))
 {
     <header>
@@ -16,7 +24,7 @@
                     <li class="nav-item navbar-dropdown dropdown-user dropdown">
                         <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
                             <div class="avatar">
-                                <img src="~/assets/images/avatar.png" class="w-px-40 h-auto rounded-circle" />
+                                <img src="@imageUserUrl" class="w-px-40 h-40 rounded-circle" />
                             </div>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
@@ -25,7 +33,7 @@
                                     <div class="d-flex">
                                         <div class="flex-shrink-0 me-3">
                                             <div class="avatar">
-                                                <img src="~/assets/images/avatar.png" class="w-px-40 h-auto rounded-circle" />
+                                                <img src="@imageUserUrl" class="w-px-40 h-40 rounded-circle" />
                                             </div>
                                         </div>
                                         <div class="flex-grow-1">
@@ -39,7 +47,7 @@
                                 <div class="dropdown-divider"></div>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="#">
+                                <a class="dropdown-item" asp-area="Identity" asp-page="/Account/Manage/Index">
                                     <i class="bx bx-cog me-2"></i>
                                     <span class="align-middle">Settings</span>
                                 </a>

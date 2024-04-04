@@ -2,6 +2,7 @@
 using Bookify.Web.Core.Settings;
 using Bookify.Web.Core.Validations;
 using Bookify.Web.Core.ViewModels;
+using Bookify.Web.Helpers.Services;
 using Bookify.Web.Services;
 using CloudinaryDotNet;
 using Microsoft.AspNetCore.Mvc;
@@ -9,6 +10,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using System.Linq.Dynamic.Core;
+using System.Security.Claims;
 
 namespace Bookify.Web.Controllers
 {
@@ -24,10 +26,11 @@ namespace Bookify.Web.Controllers
         private readonly Cloudinary _cloudinary;
         private readonly CloudinarySettings _cloudinarySettings;
         private readonly ApplicationDbContext _applicationDbContext;
+        private readonly IImageService _imageService;
 
 
         public BooksController(ICategoryService categoryService, IAuthorService authorService, IBookService bookService
-            , IMapper mapper, IWebHostEnvironment webHostEnvironment, IOptions<CloudinarySettings> CloudinaryOptions, ApplicationDbContext applicationDbContext)
+            , IMapper mapper, IWebHostEnvironment webHostEnvironment, IOptions<CloudinarySettings> CloudinaryOptions, ApplicationDbContext applicationDbContext, IImageService imageService)
         {
             _authorService = authorService;
             _categoryService = categoryService;
@@ -40,6 +43,7 @@ namespace Bookify.Web.Controllers
             _cloudinary = new Cloudinary(account);
             _cloudinary.Api.Secure = true;
             _applicationDbContext = applicationDbContext;
+            _imageService = imageService;
         }
         public IActionResult Index()
         {
@@ -66,13 +70,13 @@ namespace Bookify.Web.Controllers
 
             var data = await _applicationDbContext.Set<Book>().Include(b => b.Author)
                 .Where(b => b.Title.Contains(serchValue) || b.Author!.Name.Contains(serchValue))
-                .Skip(int.Parse(start)).Take(int.Parse(length)).OrderBy($"{colName} {orderMethod}").ToListAsync();
-
+                .OrderBy($"{colName} {orderMethod}")
+                .Skip(int.Parse(start)).Take(int.Parse(length)).ToListAsync();
+            
             return Ok(new
             {
                 draw = draw,
-                data = _mapper.Map<IEnumerable<BookViewModel>>(data)
-                ,
+                data = _mapper.Map<IEnumerable<BookViewModel>>(data),
                 recordsTotal = _bookService.GetBooksCount(),
                 recordsFiltered = _bookService.GetBooksCount()
             });
@@ -109,19 +113,20 @@ namespace Bookify.Web.Controllers
 
             if (model.Image is not null)
             {
-                var extension = Path.GetExtension(model.Image.FileName);
-                if (!_imageExtensions.Contains(extension.ToLower()))
-                {
-                    ModelState.AddModelError(nameof(model.Image), "Not allowed Extension.");
-                    return View("Form", await PopulateBookForm(model));
-                }
-                if (model.Image.Length > _imageSize)
-                {
-                    ModelState.AddModelError(nameof(model.Image), "Size must be less than 2 MB.");
-                    return View("Form", await PopulateBookForm(model));
-                }
+                var imageName = Guid.NewGuid().ToString() + Path.GetExtension(model.Image.FileName);
+                var path = "images/books";
 
-                var imageName = Guid.NewGuid().ToString() + extension;
+                var imageResult = await _imageService
+                    .UploadAsync(model.Image, path, imageName, hasThumb: true);
+
+                if (!imageResult.isUploaded)
+                {
+                    ModelState.AddModelError(nameof(model.Image), imageResult.errorMessage!);
+                    return View("Form", await PopulateBookForm(model));
+                }
+                model.ImageUrl = $"/{path}/{imageName}";
+                model.ImageThumbnailUrl = $"/{path}/thumb/{imageName}";
+
                 //using var imageStream = model.Image.OpenReadStream();
                 //var uploadParams = new ImageUploadParams()
                 //{
@@ -134,23 +139,6 @@ namespace Bookify.Web.Controllers
                 //model.ImageUrl = uploadResult.SecureUrl.ToString();
                 //model.PublicId = uploadResult.PublicId;
                 //model.ImageThumbnailUrl = GetBookThumbnailUrl(model.ImageUrl);
-
-                var imageUrl = $"/images/books/{imageName}";
-                var ImageThumbnailUrl = $"/images/books/thumbs/{imageName}";
-
-                var imagePath = $"{_webHostEnvironment.WebRootPath}{imageUrl}";
-                var ImageThumbnailPath = $"{_webHostEnvironment.WebRootPath}{ImageThumbnailUrl}";
-
-                using var imageFile = System.IO.File.Create(imagePath);
-                model.Image.CopyTo(imageFile);
-                model.ImageUrl = imageUrl;
-
-                using var image = Image.Load(model.Image.OpenReadStream());
-                var height = (float)image.Height * 200 / image.Width;
-                image.Mutate(x => x.Resize(width: 200, height: (int)height));
-
-                image.Save(ImageThumbnailPath);
-                model.ImageThumbnailUrl = ImageThumbnailUrl;
             }
 
             var book = _mapper.Map<Book>(model);
@@ -218,19 +206,29 @@ namespace Bookify.Web.Controllers
 
             if (model.Image is not null)
             {
-                var extension = Path.GetExtension(model.Image.FileName);
-                if (!_imageExtensions.Contains(extension.ToLower()))
+                var imageName = Guid.NewGuid().ToString() + Path.GetExtension(model.Image.FileName);
+                var path = "images/books";
+
+                var imageResult = await _imageService
+                    .UploadAsync(model.Image, path, imageName, hasThumb: true);
+
+                if (!imageResult.isUploaded)
                 {
-                    ModelState.AddModelError(nameof(model.Image), "Not allowed Extension.");
+                    ModelState.AddModelError(nameof(model.Image), imageResult.errorMessage!);
                     return View("Form", await PopulateBookForm(model));
                 }
-                if (model.Image.Length > _imageSize)
+                model.ImageUrl = $"/{path}/{imageName}";
+                if (book.ImageUrl is not null)
                 {
-                    ModelState.AddModelError(nameof(model.Image), "Size must be less than 2 MB.");
-                    return View("Form", await PopulateBookForm(model));
+                    _imageService.Delete(book.ImageUrl);
                 }
 
-                var imageName = Guid.NewGuid().ToString() + extension;
+                model.ImageThumbnailUrl = $"/{path}/thumb/{imageName}";
+                if (book.ImageThumbnailUrl is not null)
+                {
+                    _imageService.Delete(book.ImageThumbnailUrl);
+                }
+
                 //using var imageStream = model.Image.OpenReadStream();
                 //var uploadParams = new ImageUploadParams()
                 //{
@@ -250,36 +248,6 @@ namespace Bookify.Web.Controllers
                 //    await _cloudinary.DestroyAsync(deletionParams);
                 //}
 
-
-                var imageUrl = $"/images/books/{imageName}";
-                var ImageThumbnailUrl = $"/images/books/thumbs/{imageName}";
-
-
-                var imagePath = $"{_webHostEnvironment.WebRootPath}{imageUrl}";
-                var ImageThumbnailPath = $"{_webHostEnvironment.WebRootPath}{ImageThumbnailUrl}";
-
-                using var imageFile = System.IO.File.Create(imagePath);
-                model.Image.CopyTo(imageFile);
-                model.ImageUrl = imageUrl;
-
-                using var image = Image.Load(model.Image.OpenReadStream());
-                var height = (float)200 * image.Height / image.Width;
-
-                image.Mutate(r => r.Resize(200, (int)height));
-                image.Save(ImageThumbnailPath);
-                model.ImageThumbnailUrl = ImageThumbnailUrl;
-
-                if (book.ImageUrl is not null)
-                {
-                    var oldImagePath = $"{_webHostEnvironment.WebRootPath}{book.ImageUrl}";
-                    var oldImageThumbnailPath = $"{_webHostEnvironment.WebRootPath}{book.ImageThumbnailUrl}";
-
-                    if (System.IO.File.Exists(oldImagePath))
-                        System.IO.File.Delete(oldImagePath);
-
-                    if (System.IO.File.Exists(oldImageThumbnailPath))
-                        System.IO.File.Delete(oldImageThumbnailPath);
-                }
 
             }
             else
