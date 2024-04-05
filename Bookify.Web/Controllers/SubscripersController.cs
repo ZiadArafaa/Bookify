@@ -1,6 +1,8 @@
-﻿using Bookify.Web.Core.ViewModels;
+﻿using Bookify.Web.Core.Validations;
+using Bookify.Web.Core.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 
 namespace Bookify.Web.Controllers
 {
@@ -17,16 +19,25 @@ namespace Bookify.Web.Controllers
         {
             return View();
         }
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
 
             SubscriperFormViewModel model = new()
             {
-                Governorates = _context.Set<Governorate>()
-                .Select(g => new SelectListItem { Text = g.Name, Value = g.Id.ToString() }).OrderBy(g => g.Text).ToList()
+                Governorates = await _context.Set<Governorate>()
+                .Select(g => new SelectListItem { Text = g.Name, Value = g.Id.ToString() }).OrderBy(g => g.Text).ToListAsync()
             };
 
             return View("Form", model);
+        }
+        [AjaxOnly]
+        public async Task<IActionResult> GetAreas(int GovernrateId)
+        {
+            var result = await _context.Set<Area>()
+                .Where(a => a.GovernorateId == GovernrateId).Select(a => new { a.Id, a.Name })
+                .OrderBy(a => a.Name).ToListAsync();
+
+            return Ok(result);
         }
     }
 }

@@ -90,7 +90,7 @@
                                     <span asp-validation-for="GovernorateId" class="text-danger"></span>
                                 </div>
                                 <div class="col-6 ">
-                                    <select class="form-select js-select2" aria-label="Default select example" asp-for="AreaId"
+                                    <select id="areaId" class="form-select js-select2" aria-label="Default select example" asp-for="AreaId"
                                             asp-items="@Model.Areas">
                                         <option value=""></option>
                                     </select>
@@ -141,11 +141,7 @@
     <partial name="_ValidationScriptsPartial" />
     <script src="~/lib/datepicker/datepicker.min.js"></script>
     <script src="~/lib/select2/js/select2.min.js"></script>
-    <script>
-        $(document).ready(function () {
-                
-        });
-    </script>
+    <script src="~/js/subscriper.js" asp-append-version="true"></script>
 }
 @section Styles {
     <link rel="stylesheet" href="~/lib/select2/css/select2.min.css" />
