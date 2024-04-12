@@ -1,6 +1,6 @@
 ﻿namespace Bookify.Web.Core.Models
 {
-    public class Subscriper : BaseModel
+    public class Subscriber : BaseModel
     {
         public int Id { get; set; }
         [MaxLength(200)]

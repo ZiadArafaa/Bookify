@@ -95,7 +95,7 @@ namespace Bookify.Web.Data
         }
         private void ModifaySubscriber(ModelBuilder modelBuilder)
         {
-            var model = modelBuilder.Entity<Subscriper>().ToTable("Subscripers", "Client");
+            var model = modelBuilder.Entity<Subscriber>().ToTable("Subscribers", "Client");
 
             model.HasKey(s => s.Id);
             model.HasIndex(s => s.NationalId).IsUnique().HasFilter(null);

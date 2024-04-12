@@ -3,7 +3,7 @@
         var GovernrateId = $(this).val();
         $.ajax({
             method: "get",
-            url: "/Subscripers/GetAreas?GovernrateId=" + GovernrateId,
+            url: "/Subscribers/GetAreas?GovernrateId=" + GovernrateId,
             success: function (data) {
 
                 var areaList = $("#areaId");

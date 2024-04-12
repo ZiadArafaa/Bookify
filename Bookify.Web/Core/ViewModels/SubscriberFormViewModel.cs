@@ -5,20 +5,20 @@ using UoN.ExpressiveAnnotations.NetCore.Attributes;
 
 namespace Bookify.Web.Core.ViewModels
 {
-    public class SubscriperFormViewModel
+    public class SubscriberFormViewModel
     {
         public int Id { get; set; }
         [MaxLength(200, ErrorMessage = Errors.MaxLength)]
         [EmailAddress]
-        [Remote(action: "AllowEmail", controller: "Subscripers", AdditionalFields = "Id", ErrorMessage = Errors.NotAllowedItem)]
+        [Remote(action: "AllowEmail", controller: "Subscribers", AdditionalFields = "Id", ErrorMessage = Errors.NotAllowedItem)]
         public string Email { get; set; } = null!;
         [MaxLength(100, ErrorMessage = Errors.MaxLength), Display(Name = "First name")]
         [RegularExpression(Regex.Username, ErrorMessage = Errors.UsernameMatch)]
-        [Remote(action: "AllowName", controller: "Subscripers", AdditionalFields = "Id,LastName", ErrorMessage = Errors.NotAllowedItem)]
+        [Remote(action: "AllowName", controller: "Subscribers", AdditionalFields = "Id,LastName", ErrorMessage = Errors.NotAllowedItem)]
         public string FirstName { get; set; } = null!;
         [MaxLength(100, ErrorMessage = Errors.MaxLength), Display(Name = "Last name")]
         [RegularExpression(Regex.Username, ErrorMessage = Errors.UsernameMatch)]
-        [Remote(action: "AllowName", controller: "Subscripers", AdditionalFields = "Id,FirstName", ErrorMessage = Errors.NotAllowedItem)]
+        [Remote(action: "AllowName", controller: "Subscribers", AdditionalFields = "Id,FirstName", ErrorMessage = Errors.NotAllowedItem)]
         public string LastName { get; set; } = null!;
         [Display(Name = "Birth of date")]
         [AssertThat("BirthOfDate < Today() ", ErrorMessage = Errors.NotAllowDate)]
@@ -26,12 +26,12 @@ namespace Bookify.Web.Core.ViewModels
         [MaxLength(500, ErrorMessage = Errors.MaxLength)]
         public string Address { get; set; } = null!;
         [MaxLength(14, ErrorMessage = Errors.MaxLength), Display(Name = "National Id")]
-        [Remote(action: "AllowNationalId", controller: "Subscripers", AdditionalFields = "Id", ErrorMessage = Errors.NotAllowedItem)]
+        [Remote(action: "AllowNationalId", controller: "Subscribers", AdditionalFields = "Id", ErrorMessage = Errors.NotAllowedItem)]
         [RegularExpression(Regex.NationalId, ErrorMessage = Errors.NotValidFormate)]
         public string NationalId { get; set; } = null!;
         [MaxLength(20, ErrorMessage = Errors.MaxLength), Display(Name = "Mobile number")]
         [RegularExpression(Regex.PhoneNnumber, ErrorMessage = Errors.PhoneNumberNotValid)]
-        [Remote(action: "AllowMobileNumber", controller: "Subscripers", AdditionalFields = "Id", ErrorMessage = Errors.NotAllowedItem)]
+        [Remote(action: "AllowMobileNumber", controller: "Subscribers", AdditionalFields = "Id", ErrorMessage = Errors.NotAllowedItem)]
         public string MobileNumber { get; set; } = null!;
         [Display(Name = "Has Whatsapp ?")]
         public bool HasWhatsApp { get; set; }

@@ -41,10 +41,10 @@ namespace Bookify.Web.Core.Mappings
 
 
             //Subscriper
-            CreateMap<SubscriperFormViewModel, Subscriper>().ReverseMap();
-            CreateMap<Subscriper, SubscriperSearchResponseViewModel>()
+            CreateMap<SubscriberFormViewModel, Subscriber>().ReverseMap();
+            CreateMap<Subscriber, SubscribersearchResponseViewModel>()
                 .ForMember(m => m.FullName, opt => opt.MapFrom(s => $"{s.FirstName} {s.LastName}"));
-            CreateMap<Subscriper, SubscriperViewModel>()
+            CreateMap<Subscriber, SubscriberViewModel>()
                 .ForMember(m => m.Governorate, opt => opt.MapFrom(s => s.Governorate!.Name))
                 .ForMember(m => m.Area, opt => opt.MapFrom(s => s.Area!.Name))
                 .ForMember(m => m.FullName, opt => opt.MapFrom(s => s.FirstName + " " + s.LastName));
