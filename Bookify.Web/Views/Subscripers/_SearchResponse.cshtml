@@ -1,0 +1,31 @@
+﻿@model SubscriperSearchResponseViewModel
+
+<div class="card">
+    <div class="card-body">
+        @if(Model is null)
+        {
+            <div class="alert alert-warning" role="alert">
+                <div class="">
+                    <div class="row">Sorry subscriper not exist.</div>
+                    <div class="row mt-2 col-3"><a class="btn btn-primary" asp-action="Create">Add new subscriper</a></div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="d-flex flex-column m-2">
+                <p class="text-gray-900 text-hover-primary fs-6 fw-bold">@Model.FullName</p>
+            </div>
+            <div class="d-flex align-items-center">
+                <div class="d-flex align-items-center flex-grow-1">
+                    <div class="symbol symbol-45px me-5">
+                        <img src="@Model.ImageThumbnailUrl" alt="Subscriper">
+                    </div>
+                </div>
+                <div class="my-0">
+                    <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-primary">Details</a>
+                </div>
+            </div>
+        }
+    </div>
+</div>

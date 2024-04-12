@@ -1,5 +1,33 @@
-﻿@{
+﻿@model SubscriperSearchFormViewModel
+@{
     ViewData["Title"] = "Subscripers";
 }
+<div class="row">
+    <div class="col-4">
+        <div class="card">
+            <div class="card-body">
+                <form data-ajax="true" asp-action="Search"
+                      data-ajax-method="post"
+                      data-ajax-begin="OnModelBegin"
+                      data-ajax-update="#Search"
+                      data-ajax-failure="OnModelFailure"
+                      data-ajax-complete="OnModelComplete">
 
-<a class="btn btn-primary text-white" asp-controller="Subscripers" asp-action="Create">Create</a> 
+                    <div class="input-group">
+                        <input type="search" asp-for="Value" class="form-control rounded" placeholder="Search by email , mobile and nationalId" aria-label="Search" aria-describedby="search-addon" />
+                        <button type="submit" class="btn btn-outline-primary" data-mdb-ripple-init>search</button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mt-3" id="Search">
+</div>
+
+
+@section Scripts{
+    <partial name="_ValidationScriptsPartial" />
+}

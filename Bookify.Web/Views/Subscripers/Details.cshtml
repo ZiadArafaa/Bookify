@@ -1,0 +1,86 @@
+﻿@model SubscriperViewModel
+@{
+    ViewData["Title"] = Model.FullName;
+}
+<div class="row">
+    <div class="card">
+        <div class="card-body">
+            <div class="row justify-content-between">
+
+                <div class="col-md-auto">
+                    <span class="badge bg-label-secondary">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-arms-up" viewBox="0 0 16 16">
+                            <path d="M8 3a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3"></path>
+                            <path d="m5.93 6.704-.846 8.451a.768.768 0 0 0 1.523.203l.81-4.865a.59.59 0 0 1 1.165 0l.81 4.865a.768.768 0 0 0 1.523-.203l-.845-8.451A1.5 1.5 0 0 1 10.5 5.5L13 2.284a.796.796 0 0 0-1.239-.998L9.634 3.84a.7.7 0 0 1-.33.235c-.23.074-.665.176-1.304.176-.64 0-1.074-.102-1.305-.176a.7.7 0 0 1-.329-.235L4.239 1.286a.796.796 0 0 0-1.24.998l2.5 3.216c.317.316.475.758.43 1.204Z"></path>
+                        </svg>
+                    </span>
+                    Subscripers
+                </div>
+                <div class="col-md-auto">
+                    <a class="btn btn-primary text-white" asp-route-id="@Model.Id" asp-action="Edit">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                            <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                            <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z" />
+                        </svg>
+                        Edit
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-5 d-flex justify-content-between">
+    <div class="col-4 card">
+        <div class="card-body">
+            <div class="row mb-7">
+                <div class="text-center">
+                    <a data-fslightbox href="@(Model.ImageUrl)">
+                        <img src="@(Model.ImageThumbnailUrl)" alt="Book Image">
+                    </a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="text-center fs-3 text-primary">@Model.FullName</div>
+            </div>
+            <div class="row mt-4">
+                <div class="col">Details</div>
+                <div class="col text-end"><span class="badge bg-label-success">Active-Member</span></div>
+            </div>
+            <hr />
+            <div class="pb-0 fs-6">
+                <!--begin::Details item-->
+                <div class="fw-bold mt-2">National ID</div>
+                <div class="text-gray-600">ID-@Model.NationalId</div>
+                <!--begin::Details item-->
+                <!--begin::Details item-->
+                <div class="fw-bold mt-2">Email</div>
+                <div class="text-gray-600"><a href="#" class="text-gray-600 text-hover-primary">@Model.Email</a></div>
+                <!--begin::Details item-->
+                <!--begin::Details item-->
+                <div class="fw-bold mt-2">Address</div>
+                <div class="text-gray-600">@Model.Address, <br>@Model.Area<br>@Model.Governorate</div>
+                <!--begin::Details item-->
+                <!--begin::Details item-->
+                <div class="fw-bold mt-2">Birth Of Data</div>
+                <div class="text-gray-600">@Model.BirthOfDate.ToString("dd MMM,yyyyy")</div>
+
+                <div class="fw-bold mt-2">Phone</div>
+                <div class="text-gray-600">@Model.MobileNumber</div>
+
+                <div class="fw-bold mt-2">Have A WhatsApp ?</div>
+                <div class="text-gray-600">@(Model.HasWhatsApp ? "Yes" : "No")</div>
+
+                <div class="fw-bold mt-2">Blacklisted</div>
+                <div class="text-gray-600">@(Model.IsBlackListed ? "Yes" : "No")</div>
+                <!--begin::Details item-->
+            </div>
+        </div>
+    </div>
+    <div class="col">
+    </div>
+</div>
+@section Scripts
+{
+    <script src="~/lib/fslightbox/index.min.js"></script>
+}

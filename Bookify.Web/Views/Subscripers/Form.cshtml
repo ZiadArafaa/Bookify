@@ -7,16 +7,23 @@
     <div class="card">
         <div class="card-body">
             <div class="container">
-                <form method="post" asp-action="Create" asp-controller="Subscripers">
+                <form method="post" asp-controller="Subscripers" enctype="multipart/form-data">
+                    
+                    @if(!Model.Id.Equals(0))
+                    {
+                        <input type="hidden" asp-for="Id" />
+                    }
+
                     <div class="row mb-3">
                         <div class="col-4 align-self-center"><label>Profile<span class="text-danger">*</span></label></div>
                         <div class="col">
 
-                            <img src="/images/image-placeholder.jpg" class="img-thumbnail" alt="Subscriper Image" id="renderImage" style="height: 200px;">
+                            <img src="@(Model.ImageThumbnailUrl??"/images/image-placeholder.jpg")" class="img-thumbnail" alt="Subscriper Image" id="renderImage" style="height: 200px;">
                             <div class="from-text">Image must be .jpg, .jpeg, .png and size not more than 2MB.</div>
+
                             <input type="file" class="form-control" asp-for="Image"
                                    onchange="document.getElementById('renderImage').src = window.URL.createObjectURL(files[0])" />
-                            <span asp-validation-for="Image"></span>
+                            <span asp-validation-for="Image" class="text-danger"></span>
 
                         </div>
                     </div>
@@ -83,18 +90,18 @@
                         <div class="col">
                             <div class="row">
                                 <div class="col-6">
-                                    <select class="form-select js-select2" id="onSelect" aria-label="Default select example" asp-for="GovernorateId"
+                                    <select class="form-select " id="onSelect" aria-label="Default select example" asp-for="GovernorateId"
                                             asp-items="@Model.Governorates">
-                                        <option value=""></option>
+                                        <option value="" selected disabled>Select Governorates</option>
                                     </select>
                                     <span asp-validation-for="GovernorateId" class="text-danger"></span>
                                 </div>
                                 <div class="col-6 ">
-                                    <select id="areaId" class="form-select js-select2" aria-label="Default select example" asp-for="AreaId"
+                                    <select id="areaId" class="form-select " aria-label="Default select example"  asp-for="AreaId"
                                             asp-items="@Model.Areas">
-                                        <option value=""></option>
+                                        <option value="" selected disabled>Select Areas</option>
                                     </select>
-                                    <span asp-validation-for="AreaId"></span>
+                                    <span asp-validation-for="AreaId" class="text-danger"></span>
                                 </div>
                             </div>
                         </div>
@@ -138,12 +145,11 @@
 
 
 @section Scripts {
-    <partial name="_ValidationScriptsPartial" />
+    
     <script src="~/lib/datepicker/datepicker.min.js"></script>
-    <script src="~/lib/select2/js/select2.min.js"></script>
     <script src="~/js/subscriper.js" asp-append-version="true"></script>
+    <partial name="_ValidationScriptsPartial" />
 }
 @section Styles {
-    <link rel="stylesheet" href="~/lib/select2/css/select2.min.css" />
     <link rel="stylesheet" href="~/lib/datepicker/datepicker.css" />
 }

@@ -204,6 +204,7 @@ $(document).ready(function () {
         
         var isValid = $(this).valid();
 
+
         if (isValid) {
             DisableButtonSubmit()
         };

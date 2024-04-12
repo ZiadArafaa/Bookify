@@ -13,5 +13,7 @@
         public const string SizeMustBeLessThan2MB = "Size must be less than 2 MB.";
         public const string NotValidFormate = "Not valid formate";
         public const string NotAllowDate = "Not allow date.";
+        public const string NotAllowedItem = "{0} not allowed.";
+
     }
 }
