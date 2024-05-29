@@ -2,7 +2,7 @@
 {
     public class SubscribersearchResponseViewModel
     {
-        public int Id { get; set; }
+        public string Id { get; set; } = null!;
         public string FullName { get; set; } = null!;
         public string ImageThumbnailUrl { get; set; } = null!;
     }

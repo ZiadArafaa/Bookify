@@ -3,6 +3,9 @@ using Bookify.Web.Core.Consts;
 using Bookify.Web.Core.Validations;
 using Bookify.Web.Core.ViewModels;
 using Bookify.Web.Helpers.Services;
+using Hangfire;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -16,11 +19,15 @@ namespace Bookify.Web.Controllers
         private readonly ApplicationDbContext _context;
         private readonly IMapper _mapper;
         private readonly IImageService _imageService;
-        public SubscribersController(ApplicationDbContext context, IMapper mapper, IImageService imageService)
+        private readonly IDataProtector _dataProtector;
+        private readonly IEmailSender _emailSender;
+        public SubscribersController(ApplicationDbContext context, IMapper mapper, IImageService imageService, IDataProtectionProvider dataProtector, IEmailSender emailSender)
         {
             _context = context;
             _mapper = mapper;
             _imageService = imageService;
+            _dataProtector = dataProtector.CreateProtector("SecureSubscriber");
+            _emailSender = emailSender;
         }
 
         public IActionResult Index()
@@ -55,14 +62,30 @@ namespace Bookify.Web.Controllers
             subscriper.ImageUrl = $"/{path}/{imageName}";
             subscriper.ImageThumbnailUrl = $"/{path}/thumb/{imageName}";
 
+            var subscribtion = new Subscribtion
+            {
+                CreatedById = subscriper.CreatedById,
+                CreatedOn = subscriper.CreateOn,
+                StartDate = DateTime.Today,
+                EndDate = DateTime.Today.AddYears(1),
+            };
+
+            subscriper.Subscribtions.Add(subscribtion);
+
             await _context.AddAsync(subscriper);
             _context.SaveChanges();
 
+            BackgroundJob.Enqueue(() => _emailSender
+               .SendEmailAsync(subscriper.Email, "Bookify Subscribtion", "Created Processing Successfully Enjoy The Adventure Now 😍 !"));
+
+
             return RedirectToAction(nameof(Index));
         }
-        public async Task<IActionResult> Edit(int id)
+        public async Task<IActionResult> Edit(string id)
         {
-            var model = await _context.Set<Subscriber>().FindAsync(id);
+            int subscriberId = int.Parse(_dataProtector.Unprotect(id));
+
+            var model = await _context.Set<Subscriber>().FindAsync(subscriberId);
 
             if (model is null)
                 return NotFound();
@@ -95,8 +118,8 @@ namespace Bookify.Web.Controllers
                     return View("Form", await PopulateViewModelAsync(model));
                 }
 
-                 _imageService.Delete(subscriper.ImageUrl);
-                 _imageService.Delete(subscriper.ImageThumbnailUrl);
+                _imageService.Delete(subscriper.ImageUrl);
+                _imageService.Delete(subscriper.ImageThumbnailUrl);
 
                 model.ImageUrl = $"/{path}/{imageName}";
                 model.ImageThumbnailUrl = $"/{path}/thumb/{imageName}";
@@ -113,7 +136,7 @@ namespace Bookify.Web.Controllers
 
             _context.SaveChanges();
 
-            return RedirectToAction(nameof(Index), new { id = subscriper.Id });
+            return RedirectToAction(nameof(Index));
         }
         [AjaxOnly]
         public async Task<IActionResult> GetAreas(int GovernrateId)
@@ -135,24 +158,63 @@ namespace Bookify.Web.Controllers
             var subscriper = await _context.Set<Subscriber>()
                 .Where(s => (s.Email == model.Value || s.MobileNumber == model.Value || s.NationalId == model.Value) && !s.IsDeleted).SingleOrDefaultAsync();
 
-            return PartialView("_SearchResponse", _mapper.Map<SubscribersearchResponseViewModel>(subscriper));
+            if (subscriper is null)
+                return PartialView("_SearchResponse", null);
+
+            var viewModel = _mapper.Map<SubscribersearchResponseViewModel>(subscriper);
+            viewModel.Id = _dataProtector.Protect(viewModel.Id);
+
+            return PartialView("_SearchResponse", viewModel);
         }
-        public async Task<IActionResult> Details(int id)
+        public async Task<IActionResult> Details(string id)
         {
+            int subscriberId = int.Parse(_dataProtector.Unprotect(id));
+
             var subscriper = await _context.Set<Subscriber>()
-                .Include(s=>s.Governorate).Include(s=>s.Area)
-                .SingleOrDefaultAsync(m=>m.Id == id);
+                .Include(s => s.Governorate).Include(s => s.Area)
+                .Include(s => s.Subscribtions)
+                .SingleOrDefaultAsync(m => m.Id == subscriberId);
 
             if (subscriper is null)
                 return NotFound();
 
-            return View(_mapper.Map<SubscriberViewModel>(subscriper));
+            var viewModel = _mapper.Map<SubscriberViewModel>(subscriper);
+            viewModel.Id = _dataProtector.Protect(viewModel.Id);
+
+            return View(viewModel);
         }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [AjaxOnly]
+        public async Task<IActionResult> Renew(string sKey)
+        {
+            int subscriberId = int.Parse(_dataProtector.Unprotect(sKey));
 
+            var subscriber = await _context.Set<Subscriber>().Include(s => s.Subscribtions).SingleOrDefaultAsync(s => s.Id == subscriberId);
 
+            if (subscriber is null) return NotFound();
+            if (subscriber.IsBlackListed || subscriber.IsDeleted) return BadRequest();
 
+            var lastSubscrbtion = subscriber.Subscribtions.Last();
+            var startDate = lastSubscrbtion.EndDate < DateTime.Today ? DateTime.Today : lastSubscrbtion.EndDate.AddDays(1);
 
+            Subscribtion subscribtion = new()
+            {
+                CreatedById = User.FindFirst(ClaimTypes.NameIdentifier)!.Value,
+                CreatedOn = DateTime.Today,
+                StartDate = startDate,
+                EndDate = startDate.AddYears(1)
+            };
 
+            subscriber.Subscribtions.Add(subscribtion);
+            _context.SaveChanges();
+
+            BackgroundJob.Enqueue(() => _emailSender.
+                SendEmailAsync(subscriber.Email, "Bookify Renewal", $"<p>Renew Process Succeded Enjoy Now 😍 !<p/>" +
+                $"will expired at : {subscribtion.EndDate.ToString("dd MMM,yyyy")}"));
+
+            return Ok();
+        }
 
 
         public async Task<JsonResult> AllowEmail(SubscriberFormViewModel model)

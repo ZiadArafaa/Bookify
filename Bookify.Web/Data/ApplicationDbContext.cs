@@ -23,6 +23,8 @@ namespace Bookify.Web.Data
             ModifayGovernorate(modelBuilder);
             ModifayArea(modelBuilder);
             ModifaySubscriber(modelBuilder);
+            modelBuilder.Entity<Subscribtion>().ToTable("Subscribtions", schema: "Client");
+
 
             modelBuilder.Entity<BookCategory>()
                 .ToTable(name: "BookCategories", schema: "Library")
