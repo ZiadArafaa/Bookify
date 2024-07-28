@@ -1,0 +1,52 @@
+﻿@model RentalFormViewModel
+@{
+    ViewData["Title"] = (!Model.CurrentCopies.Any() ? "Add" : "Edit") + " - Rentals";
+}
+
+<partial name="_SearchRentals" model="new RentalSearchViewModel()" />
+
+
+<div class="card mt-2 p-sm-4">
+    <div class="table-responsive text-nowrap">
+        <div class="card-body pt-6">
+            <form asp-controller="Rentals" id="myForm" method="post">
+
+                <table id="myTable" class="table-responsive">
+                    <thead>
+                        <tr>
+                            <th>can rental @Model.MaxRentalsAllowed book(s)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var copy in Model.CurrentCopies)
+                        {
+                            <partial name="_SelectedBooks" model="@copy" />
+                        }
+                    </tbody>
+                </table>
+                <input type="hidden" asp-for="SubscriberKey" />
+                @if (!Model.Id.HasValue || !Model.Id.Value.Equals(0))
+                {
+                    <input asp-for="Id" type="hidden" />
+                }
+                <button type="submit" hidden id="mySubmit" class="btn btn-primary">
+                    <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                    Save
+                </button>
+            </form>
+        </div>
+
+
+    </div>
+
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        const maxCopies = @((int)RentalConfiguration.MaxCopiesForRental);
+        var countSelected = @((int)RentalConfiguration.MaxCopiesForRental) - @Model.MaxRentalsAllowed;
+        const isUpdated = @(Model.CurrentCopies.Count > 0 ? "true" : "false")
+    </script>
+    <script src="~/js/rentals.js" asp-append-version="true"></script>
+}

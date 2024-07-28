@@ -1,0 +1,24 @@
+﻿@model BookCopyViewModel
+
+<tr>
+    <td>
+        <div class="row">
+            <div class="col-5">
+                <div class="d-flex align-items-center my-4">
+                    <div class="symbol me-3">
+                        <img src="@Model.Book!.ImageThumbnailUrl" class="" alt="Selected-Book" height="75">
+                    </div>
+                    <div class="d-flex justify-content-start flex-column">
+                        <p href="/metronic8/demo1/pages/user-profile/overview.html" class="text-gray-800 fw-bold text-hover-primary mb-1 fs-6">@Model.Book.Title</p>
+                        <span class="text-gray-500 fw-semibold d-block fs-7">@Model.SerialNumber</span>
+                        <span class="text-gray-500 fw-semibold d-block fs-7">Eddition # : @Model.EdittionNumber</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col align-self-center text-end">
+                <a class="btn btn-outline-danger" id="myBtn" data-book-id="@Model.BookId" data-copy-id="@Model.Id" href="#">Remove</a>
+            </div>
+        </div>
+    </td>
+</tr>
+<input type="hidden" class='select-input' value="@Model.Id" data-book-id="@Model.BookId" />

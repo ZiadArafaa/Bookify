@@ -33,6 +33,12 @@ namespace Bookify.Web.Data
             var foreignKeys = modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys())
                  .Where(fk => fk.DeleteBehavior == DeleteBehavior.Cascade && !fk.IsOwnership).ToList();
 
+            modelBuilder.Entity<RentalCopy>().HasKey(r => new { r.RentalId, r.BookCopyId });
+
+            modelBuilder.Entity<Rental>().HasQueryFilter(r => !r.IsDeleted);
+            modelBuilder.Entity<RentalCopy>().HasQueryFilter(r => !r.Rental!.IsDeleted);
+
+
             foreach (var foreignKey in foreignKeys)
                 foreignKey.DeleteBehavior = DeleteBehavior.Restrict;
         }

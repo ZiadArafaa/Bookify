@@ -27,5 +27,6 @@
         public string ImageThumbnailUrl { get; set; } = null!;
         public bool IsBlackListed { get; set; }
         public ICollection<Subscribtion> Subscribtions { get; set; } = new List<Subscribtion>();
+        public ICollection<Rental> Rentals { get; set; } = new List<Rental>();
     }
 }

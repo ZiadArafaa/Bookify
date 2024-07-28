@@ -15,7 +15,8 @@
         public string ImageUrl { get; set; } = null!;
         public string ImageThumbnailUrl { get; set; } = null!;
         public bool IsBlackListed { get; set; }
-        public ICollection<SubscribtionViewModel> Subscribtions { get; set; } = null!;
+        public IEnumerable<SubscribtionViewModel> Subscribtions { get; set; } = null!;
+        public IEnumerable<RentalViewModel> Rentals { get; set; } = null!;
         public DateTime CreateOn { get; set; }
     }
 }

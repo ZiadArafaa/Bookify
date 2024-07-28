@@ -1,0 +1,23 @@
+﻿@model RentalSearchViewModel
+
+<div class="row">
+    <div class="col-4">
+        <div class="card">
+            <div class="card-body">
+                <form data-ajax="true" asp-action="Search"
+                      data-ajax-method="post"
+                      data-ajax-begin="OnModelBegin"
+                      data-ajax-success="OnSearchSuccess"
+                      data-ajax-failure="OnSearchFailure"
+                      data-ajax-complete="OnModelComplete">
+
+                    <div class="input-group">
+                        <input type="search" asp-for="Value" class="form-control rounded" placeholder="Search by serial number" aria-label="Search" aria-describedby="search-addon" />
+                        <button type="submit" class="btn btn-outline-primary" data-mdb-ripple-init>Search</button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

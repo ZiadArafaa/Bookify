@@ -112,7 +112,7 @@ app.UseAuthorization();
 app.UseHangfireDashboard("/hangfire", new DashboardOptions()
 {
     DashboardTitle = "Bookify Dashboard",
-    IsReadOnlyFunc = _ => true,
+   // IsReadOnlyFunc = _ => true,
     Authorization = new[]{
         new DashboardAuthorizationFilter("AdminOnly")
    }
@@ -134,6 +134,7 @@ var emailSender = serviceScope.ServiceProvider.GetRequiredService<IEmailSender>(
 var tasksHangfire = new TasksHangfire(dbContext, emailSender);
 
 RecurringJob.AddOrUpdate("NotifyToRenewal", () => tasksHangfire.NotifayRenewAsync(), "0 13 * * *");
+RecurringJob.AddOrUpdate("NotifyToReturnRental", () => tasksHangfire.ReturnRental(), "0 13 * * *");
 
 
 app.MapControllerRoute(

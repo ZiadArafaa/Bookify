@@ -1,0 +1,95 @@
+﻿@model RentalReturnFormViewModel
+@{
+    ViewData["Title"] = "Return Rental";
+}
+
+
+<div class="card mt-2 p-sm-4">
+    <div class="table-responsive text-nowrap">
+        <div class="card-body pt-6">
+            <form asp-controller="Rentals" method="post">
+
+                <table id="myTable" class="table">
+                    <thead>
+                        <tr>
+                            <th>Book Copy</th>
+                            <th scope="col">Rental Date</th>
+                            <th scope="col">End Date</th>
+                            <th scope="col">Return Date</th>
+                            <th scope="col">Delay In Days</th>
+                            <th scope="col">Extended On</th>
+                            <th scope="col">Return</th>
+                            <th scope="col">Extend</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < Model.Copies.Count; i++)
+                        {
+                            var copy = Model.Copies[i];
+                            <tr scope="row">
+                                <td>
+                                    <div class="row">
+                                        <div class="col-5">
+                                            <div class="d-flex align-items-center my-4">
+                                                <div class="symbol me-3">
+                                                    <img src="@copy.BookCopy!.Book!.ImageThumbnailUrl" class="" alt="Selected-Book" height="75">
+                                                </div>
+                                                <div class="d-flex justify-content-start flex-column">
+                                                    <p href="/metronic8/demo1/pages/user-profile/overview.html" class="text-gray-800 fw-bold text-hover-primary mb-1 fs-6">@copy.BookCopy.Book.Title</p>
+                                                    <span class="text-gray-500 fw-semibold d-block fs-7">@copy.BookCopy.SerialNumber</span>
+                                                    <span class="text-gray-500 fw-semibold d-block fs-7">Eddition # : @copy.BookCopy.SerialNumber</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>@copy.RentalDate.ToString("dd MMM,yyyy")</td>
+                                <td>@copy.EndDate.ToString("dd MMM,yyyy")</td>
+                                <td>@(copy.ReturnDate.HasValue ? copy.ReturnDate!.Value.ToString("dd MMM,yyyy") : "-")</td>
+                                <td class="@(!copy.DelayInDays.Equals(0)?"text-danger":"")">@copy.DelayInDays Day(s)</td>
+                                <td>@(copy.ExtendedOn.HasValue ? copy.ExtendedOn!.Value.ToString("dd MMM,yyyy") : "-")</td>
+                                <td>
+                                    <div class="form-check">
+                                        <input class="form-check-input" value="true" type="radio" name=@($"SelectedCopies[{i}].IsReturned")
+                                               asp-for="SelectedCopies[i].IsReturned" id="@($"SelectedCopies_{i}_true")">
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="form-check">
+                                        <input class="form-check-input" value="false" type="radio" name=@($"SelectedCopies[{i}].IsReturned")
+                                               asp-for="SelectedCopies[i].IsReturned" id=@($"SelectedCopies_{i}_false")
+                                               disabled="@(Model.AllowedForExtension? null:"disabled")">
+                                    </div>
+                                </td>
+                            </tr>
+                            <input type="hidden" name=@($"SelectedCopies[{i}].Id")
+                                   asp-for="SelectedCopies[i].Id" id=@($"SelectedCopies_{i}_id") />
+                        }
+                    </tbody>
+                </table>
+                @if (Model.TotalDlayInDays > 0)
+                {
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" asp-for="PenaltyPaid">
+                        <label class="form-check-label" asp-for="PenaltyPaid">
+                        </label>
+                    </div>
+                }
+                <input type="hidden" asp-for="TotalDlayInDays" />
+                <input type="hidden" asp-for="Id" />
+                <div class="card-footer">
+                    <div asp-validation-summary="All" class="text-danger"></div>
+                    <button type="submit" class="btn btn-primary">
+                        <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                        Save
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -38,14 +38,14 @@ function showSuccessMessage(Message = 'Good Job') {
     });
 }
 function OnModelBegin() {
-    DisableButtonSubmit();
+    DisableButtonSubmit($('#Modal :submit'));
 }
 function OnModelComplete() {
-    EnableButtonSubmit();
+    EnableButtonSubmit($('#Modal :submit'));
 }
-function DisableButtonSubmit() {
-    $(':submit').find('span').removeClass('d-none');
-    $(':submit').attr('disabled', 'disabled');
+function DisableButtonSubmit(btn) {
+    btn.find('span').removeClass('d-none');
+    btn.attr('disabled', 'disabled');
 }
 function EnableButtonSubmit() {
     $(':submit').find('span').addClass('d-none');
@@ -199,14 +199,14 @@ $(document).ready(function () {
             content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:16px }'
         });
     }
-    
+
     $('form').on('submit', function () {
-        
+
         var isValid = $(this).valid();
 
 
         if (isValid) {
-            DisableButtonSubmit()
+            DisableButtonSubmit($(this).find(':submit'))
         };
     });
 

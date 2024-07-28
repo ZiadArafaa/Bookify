@@ -1,0 +1,37 @@
+﻿@model IEnumerable<RentalViewModel>
+
+
+
+<div class="alert alert-warning d-flex" role="alert" id="alert" style="display:@(!Model.Any()?"":"none") !important">
+    <span class="badge badge-center rounded-pill bg-warning border-label-warning p-3 me-2"><i class="bx bx-wallet fs-6"></i></span>
+    <div class="d-flex flex-column ps-1">
+        <h6 class="alert-heading d-flex align-items-center mb-1">Not Found!!</h6>
+        <span>Rentals not Exist yet!</span>
+    </div>
+</div>
+
+
+<table class="table" id="rentalsTable" style="display:@(Model.Any()?"":"none") !important">
+    <thead>
+        <tr>
+            <th>Start Date</th>
+            <th># Of Copies</th>
+            <th>Delay In Days</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var rental in Model)
+        {
+            <tr>
+                <td>@rental.StartDate.ToString("dd MMM,yyyy")</td>
+                <td>@rental.NumberCopies</td>
+                <td>@rental.TotalDelayInDays</td>
+                <td>
+                    <a asp-action="Details" asp-controller="Rentals" asp-route-Id="@rental.Id" class="btn btn-primary btn-sm">Details</a>
+                    <a href="javascript:;" class="btn btn-danger btn-sm js-rental-cancel @(rental.CreateOn.Date == DateTime.Today.Date?"":"d-none")" data-url="/Subscribers/MarkRentalDeleted/@rental.Id">Cancel</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

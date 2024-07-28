@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System.Drawing.Printing;
 using System.Security.Claims;
 
 namespace Bookify.Web.Controllers
@@ -21,7 +22,8 @@ namespace Bookify.Web.Controllers
         private readonly IImageService _imageService;
         private readonly IDataProtector _dataProtector;
         private readonly IEmailSender _emailSender;
-        public SubscribersController(ApplicationDbContext context, IMapper mapper, IImageService imageService, IDataProtectionProvider dataProtector, IEmailSender emailSender)
+        public SubscribersController(ApplicationDbContext context,
+            IMapper mapper, IImageService imageService, IDataProtectionProvider dataProtector, IEmailSender emailSender)
         {
             _context = context;
             _mapper = mapper;
@@ -173,6 +175,8 @@ namespace Bookify.Web.Controllers
             var subscriper = await _context.Set<Subscriber>()
                 .Include(s => s.Governorate).Include(s => s.Area)
                 .Include(s => s.Subscribtions)
+                .Include(s => s.Rentals.OrderByDescending(r => r.CreateOn))
+                .ThenInclude(r => r.RentalCopies)
                 .SingleOrDefaultAsync(m => m.Id == subscriberId);
 
             if (subscriper is null)
@@ -215,6 +219,26 @@ namespace Bookify.Web.Controllers
 
             return Ok();
         }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [AjaxOnly]
+        public async Task<IActionResult> MarkRentalDeleted(int id)
+        {
+            var rental = await _context.Set<Rental>().Include(r => r.RentalCopies).SingleOrDefaultAsync(r => r.Id == id);
+
+            if (rental is null || rental.CreateOn.Date != DateTime.Today.Date)
+                return NotFound();
+
+            rental.IsDeleted = true;
+            rental.LastUpdatedOn = DateTime.Today;
+            rental.UpdatedById = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+
+            _context.SaveChanges();
+
+            return Ok(new { copiesCount = rental.RentalCopies.Count });
+        }
+
+
 
 
         public async Task<JsonResult> AllowEmail(SubscriberFormViewModel model)
