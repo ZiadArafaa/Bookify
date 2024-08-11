@@ -14,7 +14,7 @@ namespace Bookify.Web.Services
         }
 
         public async Task<IEnumerable<Category>> GetCategoriesAsync() =>
-            await _context.Set<Category>().FromSqlRaw("Select * From Library.Categories").AsNoTracking().ToListAsync();
+            await _context.Set<Category>().AsNoTracking().ToListAsync();
 
         public async Task<int> CreateCategoryAsync(Category category)
         {
@@ -29,21 +29,11 @@ namespace Bookify.Web.Services
 
         public async Task<Category?> IsExistAsync(string Name)
         {
-            var queryValue = new SqlParameter(nameof(Name), Name);
-
-            var category = await _context.Set<Category>()
-                .FromSqlRaw($"EXECUTE dbo.sp_GetCategoryByName @Name ",queryValue).ToListAsync();
-
-            return category.SingleOrDefault();
+            return await _context.Set<Category>().SingleOrDefaultAsync(c => c.Name == Name);
         }
         public async Task<Category?> IsExistAsync(int Id)
         {
-            var queryValue = new SqlParameter(nameof(Id), Id);
-
-            var category = await _context.Set<Category>()
-                .FromSqlRaw("EXECUTE dbo.sp_GetCategoryById @Id ", queryValue).ToListAsync();
-
-            return category.SingleOrDefault();
+            return await _context.Set<Category>().FindAsync(Id);
         }
     }
 }

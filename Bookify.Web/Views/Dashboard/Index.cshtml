@@ -1,0 +1,120 @@
+﻿@model DashboardViewModel
+@{
+    ViewBag.Title = "Dashboard";
+}
+<div class="content-wrapper">
+    <div class="row d-flex align-items-start">
+        <div class="card bg-image col-12"
+             style="background-image: url('/images/books-bg.webp');height: 30vh">
+            <div class="card-body">
+                <div class="p-4 glass glass-fit row  text-white ">
+                    <div class="row">
+                        <h1 class="card-title sofia-font  text-white ">Bookify</h1>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <span>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-book-fill" viewBox="0 0 16 16">
+                                    <path d="M8 1.783C7.015.936 5.587.81 4.287.94c-1.514.153-3.042.672-3.994 1.105A.5.5 0 0 0 0 2.5v11a.5.5 0 0 0 .707.455c.882-.4 2.303-.881 3.68-1.02 1.409-.142 2.59.087 3.223.877a.5.5 0 0 0 .78 0c.633-.79 1.814-1.019 3.222-.877 1.378.139 2.8.62 3.681 1.02A.5.5 0 0 0 16 13.5v-11a.5.5 0 0 0-.293-.455c-.952-.433-2.48-.952-3.994-1.105C10.413.809 8.985.936 8 1.783" />
+                                </svg>
+                            </span>
+                            @Model.NumberOfCopies+
+                        </div>
+                        <div class="col">
+                            <span>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-people-fill" viewBox="0 0 16 16">
+                                    <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6m-5.784 6A2.24 2.24 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.3 6.3 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1zM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5" />
+                                </svg>
+                            </span>
+                            @Model.NumberOfUsers
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="d-flex col-8 card mt-4">
+            <div class="card-title m-4">
+                <h3 class="m-0">Recent Add Books</h3>
+            </div>
+            <div class="card-body p-0">
+                <div class="row">
+                    @foreach (var book in Model.LastAddBooks)
+                    {
+                        <div class="col-3 m-2">
+                            <div class="card h-px-150 w-px-200">
+                                <div class="card-body" style="background:url('@book.ImageThumbnailUrl')">
+                                </div>
+                                <div class="m-1">
+                                    <h6 class="card-title my-0">@book.Title</h6>
+                                    <small class="fw-medium">@book.Author</small>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="d-flex col card mt-4 ms-2">
+            <div class="card-title m-4">
+                <h3 class="m-0">Top Books</h3>
+            </div>
+            <div class="card-body p-0">
+                <ul class="p-0 m-0">
+                    @foreach (var book in Model.TopBooks)
+                    {
+                        <li class="d-flex align-items-center mb-6">
+                            <div class="avatar flex-shrink-0 me-3">
+                                <img src="@book.ImageThumbnailUrl" alt="@book.Title" class="rounded">
+                            </div>
+                            <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+                                <div class="me-2">
+                                    <h6 class="fw-normal mb-0">@book.Title</h6>
+                                    <small class="d-block">@book.Author</small>
+                                </div>
+                            </div>
+
+                        </li>
+
+                        @if (book != Model.TopBooks.Last())
+                        {
+                            <hr />
+                        }
+                    }
+
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="d-flex col-8 card mt-4">
+            <div class="card-title m-4">
+                <h3 class="m-0">Rentals Per Days</h3>
+            </div>
+            <div class="card-body p-0">
+                <div id="chart">
+                </div>
+            </div>
+        </div>
+        <div class="d-flex col card mt-4 ms-2">
+            <div class="card-title m-4">
+                <h3 class="m-0">Subscriber Per City</h3>
+            </div>
+            <div class="card-body p-0">
+                <div id="chartSubscribers">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script src="~/js/dashboard.js" asp-append-version="true"></script>
+}
+
+

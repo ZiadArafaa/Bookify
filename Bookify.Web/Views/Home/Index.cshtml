@@ -1,8 +1,120 @@
-﻿@{
+﻿@model IEnumerable<BookViewModel>
+@{
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="page-bg p-0 m-0" style="height: 100vh">
+    <div class="row text-center m-0 mb-2">
+        <a href="/">
+            <img alt="Logo" src="~/assets/images/logo.png" width="300" />
+        </a>
+    </div>
+    <div class="row justify-content-between m-0">
+        <div class="col-6">
+            <div class="row">
+                <!--begin::Row-->
+                <div class="row g-7 w-500px  justify-content-center">
+                    <!--begin::Col-->
+                    <div class="col-5">
+                        <!--begin::Card-->
+                        <div class="card border-0 shadow-none h-30 bg-primary mh-450px w-78" style="background-color: #A838FF">
+                            <!--begin::Card body-->
+                            <div class="card-body d-flex flex-column flex-center pb-0 pt-15">
+                                <!--begin::Wrapper-->
+                                <div class="px-10 mb-10 text-center">
+                                    <!--begin::Heading-->
+                                    <h3 class="text-white mb-2 fw-bolder text-center text-uppercase mb-6">Bookify Staff</h3>
+                                    <!--end::Heading-->
+                                    <!--begin::Link-->
+                                    <a asp-controller="Dashboard" asp-action="Index" class="btn btn-hover-rise text-white bg-dark bg-opacity-10 text-uppercase fs-7 fw-bold">Go To Dashboard</a>
+                                    <!--end::Link-->
+                                </div>
+                                <!--end::Wrapper-->
+                                <!--begin::Illustrations-->
+                                <img class="mw-100 h-225px mx-auto mb-lg-n18" src="~/assets/images/staff.png" />
+                                <!--end::Illustrations-->
+                            </div>
+                            <!--end::Card body-->
+                        </div>
+                        <!--end::Card-->
+                    </div>
+                    <!--end::Col-->
+                    <!--begin::Col-->
+                    <div class="col-5">
+                        <!--begin::Card-->
+                        <div class="card border-0 shadow-none h-30 bg-primary mh-450px w-78">
+                            <!--begin::Card body-->
+                            <div class="card-body d-flex flex-column flex-center pb-0 pt-15">
+                                <!--begin::Wrapper-->
+                                <div class="px-10 mb-10 text-center">
+                                    <!--begin::Heading-->
+                                    <h3 class="text-white mb-2 fw-bolder text-center text-uppercase mb-6">Find a book</h3>
+                                    <!--end::Heading-->
+                                    <!--begin::Link-->
+                                    <a asp-controller="Search" asp-action="Index" class="btn btn-hover-rise text-white bg-dark bg-opacity-10 text-uppercase fs-7 fw-bold">Go To Books Finder</a>
+                                    <!--end::Link-->
+                                </div>
+                                <!--end::Wrapper-->
+                                <!--begin::Illustrations-->
+                                <img class="mw-100 h-225px mx-auto mb-lg-n18" src="~/assets/images/search-dark.png" />
+                                <!--end::Illustrations-->
+                            </div>
+                            <!--end::Card body-->
+                        </div>
+                        <!--end::Card-->
+                    </div>
+                    <!--end::Col-->
+                </div>
+                <!--end::Row-->
+
+            </div>
+        </div>
+        <div class="col-4 m-0">
+            <!--begin::Sidebar-->
+            <div id="kt_sidebar" class="sidebar" data-kt-drawer="true" data-kt-drawer-name="sidebar" data-kt-drawer-activate="{default: true, lg: false}" data-kt-drawer-overlay="true" data-kt-drawer-width="375px" data-kt-drawer-direction="end" data-kt-drawer-toggle="#kt_sidebar_toggle">
+                <!--begin::Header-->
+                <div class="d-flex flex-stack mb-2" id="kt_sidebar_header">
+                    <!--begin::Title-->
+                    <h2 class="text-white">Newly Added Books</h2>
+                    <!--end::Title-->
+                </div>
+                <!--end::Header-->
+                <!--begin::Body-->
+                <div class="mb-3" id="kt_sidebar_body">
+                    <!--begin::Scroll-->
+                    <div class="hover-scroll-y me-n6 pe-6" id="kt_sidebar_body" data-kt-scroll="true" data-kt-scroll-height="auto" data-kt-scroll-dependencies="#kt_sidebar_header, #kt_sidebar_footer" data-kt-scroll-wrappers="#kt_page, #kt_sidebar, #kt_sidebar_body" data-kt-scroll-offset="0">
+                        <div class="pb-20 scrollable-div" style="height: 56vh">
+                            @* data Will be Rendered here *@
+                            <ul class="p-0 m-0">
+                                @foreach (var book in Model)
+                                {
+                                    <a asp-action="Details" asp-controller="Search" asp-route-Key="@book.Key">
+                                    <li class="d-flex align-items-center mb-6">
+                                        <div class="avatar flex-shrink-0 me-3">
+                                            <img src="@book.ImageThumbnailUrl" alt="@book.Title" class="rounded">
+                                        </div>
+                                        <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+                                            <div class="me-2">
+                                                <h6 class="fw-normal mb-0">@book.Title</h6>
+                                                <small class="d-block">@book.Author</small>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    </a>
+                                    @if (book != Model.Last())
+                                    {
+                                        <hr />
+                                    }
+                                }
+
+                            </ul>
+                        </div>
+                    </div>
+                    <!--end::Scroll-->
+                </div>
+                <!--end::Body-->
+            </div>
+            <!--end::Sidebar-->
+        </div>
+    </div>
 </div>

@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using Bookify.Web.Core.Models;
 using Bookify.Web.Core.ViewModels;
+using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.DataProtection;
 
 namespace Bookify.Web.Core.Mappings
 {
@@ -61,7 +63,6 @@ namespace Bookify.Web.Core.Mappings
                 .ForMember(r => r.SubscriperMobile, opt => opt.MapFrom(r => r.Rental!.Subscriber!.MobileNumber));
 
             CreateMap<Rental, RentalViewModel>();
-
         }
     }
 }

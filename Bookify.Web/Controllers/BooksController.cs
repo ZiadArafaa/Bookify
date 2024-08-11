@@ -53,7 +53,10 @@ namespace Bookify.Web.Controllers
         {
             var book = (await _bookService.GetBooksAsync()).SingleOrDefault(b => b.Id == id);
 
-            return View(_mapper.Map<BookViewModel>(book));
+            if (book is null)
+                return NotFound();
+
+;            return View(_mapper.Map<BookViewModel>(book));
         }
         [HttpPost]
         [AjaxOnly]

@@ -25,11 +25,11 @@ namespace Bookify.Web.Services
         public async Task<IEnumerable<Book>> GetBooksAsync()
         {
             return await _context.Set<Book>()
-                .Include(b=>b.Copies).Include(a => a.Author).Include(c => c.Categories).ThenInclude(c => c.Category).ToListAsync();
+                .Include(b => b.Copies).Include(a => a.Author).Include(c => c.Categories).ThenInclude(c => c.Category).ToListAsync();
         }
         public int GetBooksCount()
         {
-            return _context.Set<Book>().Count(); 
+            return _context.Set<Book>().Count();
         }
     }
 }

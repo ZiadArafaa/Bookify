@@ -287,10 +287,12 @@ namespace Bookify.Web.Controllers
                 .ThenInclude(r => r!.Subscriber)
                 .Where(r => r.BookCopyId == id).ToListAsync();
 
-            if (rentals.Count() == 0)
-                return NotFound();
+            var model = _mapper.Map<IEnumerable<RentalHistoryViewModel>>(rentals);
 
-            return View(_mapper.Map<IEnumerable<RentalHistoryViewModel>>(rentals));
+            if (rentals.Count() == 0)
+                return View(model);
+
+            return View(model);
         }
 
         private async Task<(string ErrorMessage, int? MaxCopiesForRentals)> ValidateCreateRental(string sKey, int? rentalId = null)
@@ -310,7 +312,7 @@ namespace Bookify.Web.Controllers
 
             var subscriber = await _context.Set<Subscriber>()
                 .Include(s => s.Subscribtions).Include(s => s.Rentals).ThenInclude(s => s.RentalCopies)
-                .SingleOrDefaultAsync(s => s.Id == subscriberId || !s.IsDeleted);
+                .SingleOrDefaultAsync(s => s.Id == subscriberId && !s.IsDeleted);
 
             if (subscriber is null)
                 return ("Subscriber Not Found", null);

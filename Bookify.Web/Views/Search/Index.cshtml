@@ -1,0 +1,53 @@
+﻿@inject SignInManager<ApplicationUser> SignInManager
+@{
+    ViewData["Title"] = "Search";
+}
+@section Styles{
+    <link href="~/css/examples.css" rel="stylesheet"  asp-append-version="true"/>
+}
+<div class="m-5">
+    @if (!SignInManager.IsSignedIn(User))
+    {
+        <div class="row ms-1">
+            <ul class="d-flex ">
+                <li class="ms-1"><a href="/" class="text-gray">Home</a></li>
+                <li class="ms-4 p-0">Search</li>
+            </ul>
+        </div>
+    }
+    <div class="card">
+        <!--begin::Hero body-->
+        <div class="card-body flex-column p-5">
+            <!--begin::Hero content-->
+            <div class="d-flex align-items-center h-lg-300px p-0  row justift-content-end">
+                <!--begin::Wrapper-->
+                <div class="flex-equal d-flex justify-content-end align-items-end ms-5 col">
+                    <img src="~/assets/images/search-dark.png" alt="search" class="mw-100 mh-125px mh-lg-275px mb-lg-n12" height="200">
+                    <!--end::Illustration-->
+                </div>
+                <!--begin::Wrapper-->
+                <div class="d-flex flex-column align-items-start justift-content-center flex-equal me-5 col">
+                    <!--begin::Title-->
+                    <h1 class="fw-bold fs-4 fs-lg-1 text-gray-800 mb-2">Search on book here </h1>
+                    <!--end::Title-->
+                    <!--begin::Input group-->
+                    <div class="w-200">
+                        <input id="mySearch" type="text" placeholder="Search by book title or author name...." class="form-control fs-6 w-px-300" />
+                    </div>
+                    <!--end::Input group-->
+                </div>
+            </div>
+            <!--end::Hero content-->
+
+        </div>
+        <!--end::Hero body-->
+    </div>
+</div>
+
+@section PluginScripts{
+    <script src="~/lib/typeahead.js/typeahead.bundle.min.js"></script>
+    <script src="~/lib/handlebars.js/handlebars.min.js"></script>
+}
+@section Scripts{
+    <script src="~/js/search.js" asp-append-version="true"></script>
+}

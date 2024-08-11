@@ -1,0 +1,246 @@
+﻿@inject SignInManager<ApplicationUser> SignInManager
+@model BookViewModel
+@{
+    ViewBag.Title = Model.Title;
+}
+
+<div class="container-fluid mt-5">
+    <div class="row">
+        <ul class="d-flex ">
+            <li class="ms-1"><a href="/" class="text-gray">Home</a></li>
+            <li class="ms-4 p-0"><a class="text-gray" asp-action="Index" asp-controller="Search">Search</a></li>
+            <li class="ms-4 p-0">@Model.Title</li>
+        </ul>
+    </div>
+    <div class="row">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-auto">
+                        <a data-fslightbox href="@(Model.ImageUrl??"/images/books/no-book.jpg")">
+                            <img src="@(Model.ImageThumbnailUrl??"/images/books/thumbs/no-book.jpg")" alt="Book Image" style="height: 215px;">
+                        </a>
+                    </div>
+                    <div class="col mt-3 mt-2">
+                        <div class="flex-grow-1">
+                            <!--begin::Title-->
+                            <div class="d-flex justify-content-between align-items-start flex-wrap">
+                                <!--begin::User-->
+                                <div class="d-flex flex-column">
+                                    <!--begin::Name-->
+                                    <div class="d-flex align-items-center">
+                                        <h4 class="text-gray-900 text-hover-primary fs-2 fw-bold me-1 mb-1">@Model.Title</h4>
+                                        <span class="badge bg-label-@(Model.IsDeleted?"danger":Model.IsAvailableForRental?"success":"warning")">
+                                            @(Model.IsDeleted ? "Deleted" : Model.IsAvailableForRental ? "available for rental" : "not available for rental")
+                                        </span>
+                                    </div>
+                                    <div class="d-flex flex-wrap fw-semibold fs-5 mb-0">
+                                        <p class="d-flex align-items-center me-5 mb-0">
+                                            <span>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-vector-pen" viewBox="0 0 16 16">
+                                                    <path fill-rule="evenodd" d="M10.646.646a.5.5 0 0 1 .708 0l4 4a.5.5 0 0 1 0 .708l-1.902 1.902-.829 3.313a1.5 1.5 0 0 1-1.024 1.073L1.254 14.746 4.358 4.4A1.5 1.5 0 0 1 5.43 3.377l3.313-.828zm-1.8 2.908-3.173.793a.5.5 0 0 0-.358.342l-2.57 8.565 8.567-2.57a.5.5 0 0 0 .34-.357l.794-3.174-3.6-3.6z" />
+                                                    <path fill-rule="evenodd" d="M2.832 13.228 8 9a1 1 0 1 0-1-1l-4.228 5.168-.026.086z" />
+                                                </svg>
+                                            </span>
+                                            <span class="text-primary">@Model.Author</span>
+                                        </p>
+                                    </div>
+                                    <div class="d-flex flex-wrap fs-7 mb-1">
+                                        <p class="d-flex align-items-center text-gray-500 me-5">
+                                            @Model.Publisher
+                                        </p>
+                                    </div>
+                                </div>
+                                @if (SignInManager.IsSignedIn(User))
+                                {
+                                    <div class="d-flex my-4">
+                                        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edit</a>
+                                    </div>
+                                }
+                                <!--end::Actions-->
+                            </div>
+                            <!--end::Title-->
+                            <!--begin::Stats-->
+                            <div class="d-flex flex-wrap flex-stack">
+                                <!--begin::Wrapper-->
+                                <div class="d-flex flex-column flex-grow-1 pe-8">
+                                    <!--begin::Stats-->
+                                    <div class="d-flex flex-wrap">
+                                        <!--begin::Stat-->
+                                        <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 mb-3 me-2">
+                                            <!--begin::Number-->
+                                            <div class="d-flex align-items-center">
+                                                <span>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-calendar-date" viewBox="0 0 16 16">
+                                                        <path d="M6.445 11.688V6.354h-.633A13 13 0 0 0 4.5 7.16v.695c.375-.257.969-.62 1.258-.777h.012v4.61zm1.188-1.305c.047.64.594 1.406 1.703 1.406 1.258 0 2-1.066 2-2.871 0-1.934-.781-2.668-1.953-2.668-.926 0-1.797.672-1.797 1.809 0 1.16.824 1.77 1.676 1.77.746 0 1.23-.376 1.383-.79h.027c-.004 1.316-.461 2.164-1.305 2.164-.664 0-1.008-.45-1.05-.82zm2.953-2.317c0 .696-.559 1.18-1.184 1.18-.601 0-1.144-.383-1.144-1.2 0-.823.582-1.21 1.168-1.21.633 0 1.16.398 1.16 1.23" />
+                                                        <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5M1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4z" />
+                                                    </svg>
+                                                </span>
+                                                <span class="ms-1">@Model.CreateOn.ToString("dd, MMM yyyy")</span>
+                                            </div>
+                                            <!--end::Number-->
+                                            <!--begin::Label-->
+                                            <div class="fw-semibold fs-6 text-gray-500">Creating Date</div>
+                                            <!--end::Label-->
+                                        </div>
+                                        <!--end::Stat-->
+                                        <!--begin::Stat-->
+                                        <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-2 mb-3">
+                                            <!--begin::Number-->
+                                            <div class="d-flex align-items-center">
+                                                <span>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-calendar-date" viewBox="0 0 16 16">
+                                                        <path d="M6.445 11.688V6.354h-.633A13 13 0 0 0 4.5 7.16v.695c.375-.257.969-.62 1.258-.777h.012v4.61zm1.188-1.305c.047.64.594 1.406 1.703 1.406 1.258 0 2-1.066 2-2.871 0-1.934-.781-2.668-1.953-2.668-.926 0-1.797.672-1.797 1.809 0 1.16.824 1.77 1.676 1.77.746 0 1.23-.376 1.383-.79h.027c-.004 1.316-.461 2.164-1.305 2.164-.664 0-1.008-.45-1.05-.82zm2.953-2.317c0 .696-.559 1.18-1.184 1.18-.601 0-1.144-.383-1.144-1.2 0-.823.582-1.21 1.168-1.21.633 0 1.16.398 1.16 1.23" />
+                                                        <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5M1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4z" />
+                                                    </svg>
+                                                </span>
+                                                <span class="ms-1">@Model.PublishingDate.ToString("dd, MMM yyyy")</span>
+                                            </div>
+                                            <!--end::Number-->
+                                            <!--begin::Label-->
+                                            <div class="fw-semibold fs-6 text-gray-500">Publishing Date</div>
+                                            <!--end::Label-->
+                                        </div>
+                                        <!--end::Stat-->
+                                        <!--begin::Stat-->
+                                        <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
+                                            <!--begin::Number-->
+                                            <div class="d-flex align-items-center">
+                                                <span>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-copy" viewBox="0 0 16 16">
+                                                        <path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z" />
+                                                    </svg>
+                                                </span>
+                                                <span class="ms-1 d-none js-count">@Model.Copies.Count()</span>
+                                                <span class="ms-1" id="myCount">0</span>
+                                            </div>
+                                            <!--end::Number-->
+                                            <!--begin::Label-->
+                                            <div class="fw-semibold fs-6 text-gray-500">Copies</div>
+                                            <!--end::Label-->
+                                        </div>
+                                        <!--end::Stat-->
+                                        <div class="align-self-center pb-3 ms-2">
+                                            @foreach (var category in Model.Categories)
+                                            {
+                                                <span class="badge bg-label-info me-1">@category</span>
+                                            }
+                                        </div>
+                                    </div>
+                                    <!--end::Stats-->
+                                </div>
+                            </div>
+                            <!--end::Stats-->
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <ul class="nav nav-tabs card-header-tabs">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="tab1-tab" data-toggle="tab" href="#tab1">Description</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="tab2-tab" data-toggle="tab" href="#tab2">Copies</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-5">
+        <div class="card">
+            <div class="card-body tab-content">
+
+                @* Description *@
+                <div class="tab-pane fade show active" id="tab1">
+                    @Html.Raw(Model.Description)
+                </div>
+                @* Copies *@
+                <div class="tab-pane fade" id="tab2">
+                    @if (SignInManager.IsSignedIn(User))
+                    {
+                        <div class="row mb-2 justify-content-end">
+                            <div class="col-md-auto">
+                                <a href="javascript:;" class="btn btn-primary text-white js-render-modal" data-updated="false" data-title="Add Copy" data-url="/BookCopies/Create?bookId=@Model.Id">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-square-dotted" viewBox="0 0 16 16">
+                                        <path d="M2.5 0c-.166 0-.33.016-.487.048l.194.98A1.51 1.51 0 0 1 2.5 1h.458V0zm2.292 0h-.917v1h.917zm1.833 0h-.917v1h.917zm1.833 0h-.916v1h.916zm1.834 0h-.917v1h.917zm1.833 0h-.917v1h.917zM13.5 0h-.458v1h.458c.1 0 .199.01.293.029l.194-.981A2.51 2.51 0 0 0 13.5 0m2.079 1.11a2.511 2.511 0 0 0-.69-.689l-.556.831c.164.11.305.251.415.415l.83-.556zM1.11.421a2.511 2.511 0 0 0-.689.69l.831.556c.11-.164.251-.305.415-.415L1.11.422zM16 2.5c0-.166-.016-.33-.048-.487l-.98.194c.018.094.028.192.028.293v.458h1zM.048 2.013A2.51 2.51 0 0 0 0 2.5v.458h1V2.5c0-.1.01-.199.029-.293l-.981-.194zM0 3.875v.917h1v-.917zm16 .917v-.917h-1v.917zM0 5.708v.917h1v-.917zm16 .917v-.917h-1v.917zM0 7.542v.916h1v-.916zm15 .916h1v-.916h-1zM0 9.375v.917h1v-.917zm16 .917v-.917h-1v.917zm-16 .916v.917h1v-.917zm16 .917v-.917h-1v.917zm-16 .917v.458c0 .166.016.33.048.487l.98-.194A1.51 1.51 0 0 1 1 13.5v-.458zm16 .458v-.458h-1v.458c0 .1-.01.199-.029.293l.981.194c.032-.158.048-.32.048-.487M.421 14.89c.183.272.417.506.69.689l.556-.831a1.51 1.51 0 0 1-.415-.415l-.83.556zm14.469.689c.272-.183.506-.417.689-.69l-.831-.556c-.11.164-.251.305-.415.415l.556.83zm-12.877.373c.158.032.32.048.487.048h.458v-1H2.5c-.1 0-.199-.01-.293-.029zM13.5 16c.166 0 .33-.016.487-.048l-.194-.98A1.51 1.51 0 0 1 13.5 15h-.458v1zm-9.625 0h.917v-1h-.917zm1.833 0h.917v-1h-.917zm1.834-1v1h.916v-1zm1.833 1h.917v-1h-.917zm1.833 0h.917v-1h-.917zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3z"></path>
+                                    </svg>
+                                    Add
+                                </a>
+                            </div>
+                        </div>
+                    }
+                    <div class="row">
+                        <div class="alert alert-warning @(Model.Copies.Any()?"d-none":string.Empty) js-alert" role="alert">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-exclamation-circle-fill" viewBox="0 0 16 16">
+                                <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8 4a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4m.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2" />
+                            </svg>
+                            Not Found Book Copy Items yet !
+                        </div>
+                        <table class="table @(!Model.Copies.Any()?"d-none":string.Empty)" id="myTable">
+                            <thead>
+                                <tr>
+                                    <th>Serial Number</th>
+                                    <th>Edittion</th>
+                                    <th>Book Hall</th>
+                                    <th>Rental?</th>
+                                    <th>Status</th>
+                                    <th>Created On</th>
+                                    @if (SignInManager.IsSignedIn(User))
+                                    {
+                                        <th>Details</th>
+                                        <th>Actions</th>
+                                    }
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var copy in Model.Copies)
+                                {
+                                    <tr>
+                                        <td>@copy.SerialNumber</td>
+                                        <td>@copy.EdittionNumber</td>
+                                        <td>@copy.BookHall</td>
+                                        <td><span class="badge bg-label-@(copy.IsAvailableForRental?"success":"warning")">@(copy.IsAvailableForRental ? "Available" : "Not Available")</span></td>
+                                        <td><span class="badge bg-label-@(!copy.IsDeleted?"success":"danger") js-status">@(!copy.IsDeleted ? "Available" : "Deleted")</span></td>
+                                        <td>@copy.CreateOn.ToString("dd, MMM yyyy")</td>
+                                        @if (SignInManager.IsSignedIn(User))
+                                        {
+                                            <td>
+                                                <a asp-action="RentalHistory" asp-controller="Rentals" asp-route-id="@copy.Id" class="btn btn-outline-warning">Rental History</a>
+                                            </td>
+                                            <td>
+                                                <div class="dropdown">
+                                                    <a class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+                                                        <i class="bx bx-dots-vertical-rounded"></i>
+                                                    </a>
+                                                    <div class="dropdown-menu">
+                                                        <a class="dropdown-item js-render-modal" href="javascript:;" data-updated="true" data-title="Edit Copy" data-url="/BookCopies/Edit/@copy.Id"><i class="bx bx-edit-alt me-1"></i>Edit</a>
+                                                        <a class="dropdown-item js-toggle-status" href="javascript:;" data-url="/BookCopies/ToggleStatus/@copy.Id"><i class="bx bx-trash me-1"></i>Toggle Status</a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        }
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section PluginScripts
+{
+    <script src="~/lib/fslightbox/index.min.js"></script>
+    <script src="~/lib/bootstrap/js/bootstrap.min.js"></script>
+    <script src="~/lib/countup.js/countup.umd.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            var numAnim = new countUp.CountUp('myCount', parseInt($('.js-count').text()))
+            numAnim.start()
+        });
+    </script>
+}
