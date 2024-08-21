@@ -200,7 +200,7 @@ $(document).ready(function () {
         });
     }
 
-    $('form').on('submit', function () {
+    $('form').not('#myReportForm').on('submit', function () {
 
         var isValid = $(this).valid();
 

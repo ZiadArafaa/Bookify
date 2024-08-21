@@ -1,0 +1,21 @@
+﻿@model PaginationViewModel
+<nav aria-label="Page navigation example">
+    <ul class="pagination">
+        <li class="page-item @(Model.HasPreviousPage?string.Empty:"disabled")"><a class="page-link page-previous" href="javascript:;">Previous</a></li>
+
+        @if (Model.TotalPages > (int)ReportsConfigurations.MaximumPages && Model.PageIndex > 2)
+        {
+            <li class="page-item "><span class="page-link">...</span></li>
+        }
+        @for (int i = Model.Start; i <= Model.End; i++)
+        {
+            <li class="page-item @(i == Model.PageIndex?"active":string.Empty)"><a class="page-link page-index" href="javascript:;" data-page-index="@i">@i</a></li>
+        }
+        @if (Model.TotalPages > (int)ReportsConfigurations.MaximumPages && Model.End < Model.TotalPages)
+        {
+            <li class="page-item "><span class="page-link">...</span></li>
+        }
+
+        <li class="page-item @(Model.HasNextPage?string.Empty:"disabled")"><a class="page-link page-next" href="javascript:;">Next</a></li>
+    </ul>
+</nav>

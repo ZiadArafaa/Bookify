@@ -1,0 +1,40 @@
+﻿@inject IWebHostEnvironment WebHostEnvironment
+@{
+    var image = System.Drawing.Image.FromFile($"{WebHostEnvironment.WebRootPath}/assets/images/logo.png");
+    using var ms = new MemoryStream();
+    image.Save(ms, image.RawFormat);
+
+    var base64Image = Convert.ToBase64String(ms.ToArray()); 
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        table {
+            font-family: arial, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        td, th {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #dddddd;
+        }
+        #Logo {
+            width:200px
+        }
+    </style>
+</head>
+<body>
+    <img src="data:image/png;base64, @base64Image" id="Logo"/>
+    @RenderBody()
+</body>
+</html>
+
+
+

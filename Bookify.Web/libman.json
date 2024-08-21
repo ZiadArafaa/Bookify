@@ -118,6 +118,28 @@
       "files": [
         "handlebars.min.js"
       ]
+    },
+    {
+      "library": "bootstrap-daterangepicker@3.0.5",
+      "destination": "wwwroot/lib/bootstrap-daterangepicker/",
+      "files": [
+        "daterangepicker.min.js",
+        "daterangepicker.min.css",
+        "moment.min.js"
+      ]
+    },
+    {
+      "library": "ng-bs-daterangepicker@0.0.6",
+      "destination": "wwwroot/lib/ng-bs-daterangepicker/"
+    },
+    {
+      "provider": "unpkg",
+      "library": "daterangepicker@3.1.0",
+      "destination": "wwwroot/lib/daterangepicker/",
+      "files": [
+        "daterangepicker.css",
+        "daterangepicker.js"
+      ]
     }
   ]
 }

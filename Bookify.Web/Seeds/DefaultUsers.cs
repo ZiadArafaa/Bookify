@@ -1,6 +1,7 @@
 ﻿using Bookify.Web.Core.Consts;
 using Microsoft.AspNetCore.Identity;
 
+
 namespace Bookify.Web.Seeds
 {
     public static class DefaultUsers
@@ -22,7 +23,7 @@ namespace Bookify.Web.Seeds
                 await userManager.CreateAsync(user, "P@ssword123");
                 await userManager.AddToRoleAsync(user, Roles.Admin);
             }
-
+            
         }
     }
 }

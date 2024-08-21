@@ -54,7 +54,7 @@
                                 @if (SignInManager.IsSignedIn(User))
                                 {
                                     <div class="d-flex my-4">
-                                        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edit</a>
+                                        <a asp-action="Edit" asp-controller="Books" asp-route-id="@Model.Id" class="btn btn-primary">Edit</a>
                                     </div>
                                 }
                                 <!--end::Actions-->

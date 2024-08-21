@@ -1,0 +1,40 @@
+﻿@model IEnumerable<RentalCopy>
+@{
+    Layout = "_PDFLayout";
+}
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">Subscriber Id</th>
+            <th scope="col">Subscriber Name</th>
+            <th scope="col">Subscriber MobileNumber</th>
+            <th scope="col">Book Title</th>
+            <th scope="col">Book Serial</th>
+            <th scope="col">Rental Date</th>
+            <th scope="col">End Date</th>
+            <th scope="col">Return Date</th>
+            <th scope="col">Extended On</th>
+            <th scope="col">Delay In Day(s)</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var rental in Model)
+        {
+            <tr>
+                <th>@rental.Rental!.Subscriber!.Id</th>
+                <td>@(rental.Rental!.Subscriber!.FirstName + " " + rental.Rental!.Subscriber!.LastName)</td>
+                <td>@rental.Rental!.Subscriber!.MobileNumber</td>
+                <td>@rental.BookCopy!.Book!.Title</td>
+                <td>@rental.BookCopy!.SerialNumber</td>
+                <td>@rental.RentalDate.ToString("d MMM,yyyy")</td>
+                <td>@rental.EndDate.ToString("d MMM,yyyy")</td>
+                <td>@rental.ReturnDate?.ToString("d MMM,yyyy")</td>
+                <td>@rental.ExtendedOn?.ToString("d MMM,yyyy")</td>
+                <td>
+                    @(rental.ReturnDate.HasValue ? (rental.ReturnDate - rental.EndDate).Value.Days
+                        : (DateTime.Now - rental.EndDate).Days)
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
