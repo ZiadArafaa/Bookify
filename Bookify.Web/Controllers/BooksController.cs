@@ -58,7 +58,7 @@ namespace Bookify.Web.Controllers
 
 ;            return View(_mapper.Map<BookViewModel>(book));
         }
-        [HttpPost]
+        [HttpPost,IgnoreAntiforgeryToken]
         [AjaxOnly]
         public async Task<IActionResult> GetBooks()
         {

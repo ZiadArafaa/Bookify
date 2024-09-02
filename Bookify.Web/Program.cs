@@ -19,6 +19,12 @@ using NuGet.Protocol.Plugins;
 using System.Reflection;
 using UoN.ExpressiveAnnotations.NetCore.DependencyInjection;
 using ViewToHTML.Extensions;
+using Serilog;
+using Microsoft.IdentityModel.Logging;
+using Serilog.Context;
+using static System.Net.Mime.MediaTypeNames;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -75,21 +81,27 @@ builder.Services.Configure<IdentityOptions>(options =>
 });
 
 
-
 builder.Services.AddHangfire(c => c.UseSqlServerStorage(connectionString));
 builder.Services.AddHangfireServer();
-
 
 builder.Services.Configure<AuthorizationOptions>(option => option.AddPolicy("AdminOnly", p =>
 {
     p.RequireAuthenticatedUser();
 }));
 
+builder.Services.AddMvc(options =>
+{
+    options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
+});
 
-builder.Services.AddMvc();
+
+
+//Add support to logging with SERILOG
+builder.Host.UseSerilog((context, configuration) =>
+    configuration.ReadFrom.Configuration(context.Configuration));
+
 
 var app = builder.Build();
-
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -102,6 +114,9 @@ else
     app.UseHsts();
 }
 
+app.UseExceptionHandler("/Home/Error");
+app.UseStatusCodePagesWithReExecute("/Home/Error", "?statusCode={0}");
+
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
@@ -110,10 +125,22 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.UseCookiePolicy(
+            new CookiePolicyOptions
+            {
+                Secure = CookieSecurePolicy.Always
+            });
+
+app.Use(async (context, next) =>
+{
+    context.Response.Headers.Add("X-Frame-Options", "Deny");
+    await next.Invoke();
+});
+
 app.UseHangfireDashboard("/hangfire", new DashboardOptions()
 {
     DashboardTitle = "Bookify Dashboard",
-   // IsReadOnlyFunc = _ => true,
+    // IsReadOnlyFunc = _ => true,
     Authorization = new[]{
         new DashboardAuthorizationFilter("AdminOnly")
    }
@@ -137,6 +164,15 @@ var tasksHangfire = new TasksHangfire(dbContext, emailSender);
 RecurringJob.AddOrUpdate("NotifyToRenewal", () => tasksHangfire.NotifayRenewAsync(), "0 13 * * *");
 RecurringJob.AddOrUpdate("NotifyToReturnRental", () => tasksHangfire.ReturnRental(), "0 13 * * *");
 
+app.Use(async (context, next) =>
+{
+    LogContext.PushProperty("UserId", context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+    LogContext.PushProperty("UserName", context.User.FindFirst(ClaimTypes.Name)?.Value);
+
+    await next.Invoke();
+});
+
+app.UseSerilogRequestLogging();
 
 app.MapControllerRoute(
     name: "default",

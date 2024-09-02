@@ -19,6 +19,7 @@ namespace Bookify.Web.Controllers
         }
         public async Task<IActionResult> Index()
         {
+
             var numberOfCopies = await _context.Set<BookCopy>().CountAsync(c => !c.IsDeleted);
             var numberOfMembers = await _context.Set<Subscriber>().CountAsync(b => !b.IsDeleted);
 

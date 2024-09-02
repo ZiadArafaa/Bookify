@@ -26,7 +26,7 @@ function renderDataTables() {
 function showErrorMessage(Message) {
     Swal.fire({
         title: "Oops...",
-        text: Message.responseText != undefined ? Message.responseText : 'Something went wrong !',
+        text: 'Something went wrong !',
         icon: "error"
     });
 }

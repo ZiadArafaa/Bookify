@@ -17,6 +17,12 @@
 
 </head>
 <body class="m-0">
+    <noscript>
+        <div class="position-fixed text-center h-100 w-100 bg-black pt-5" style="z-index:300000000000000">
+            <h1 class="text-danger">JavaScript Disabled</h1>
+            <span class="text-muted">enable javascript and retry again.</span>
+        </div>
+    </noscript>
     @if (SignInManager.IsSignedIn(User))
     {
         <div class="layout-wrapper layout-content-navbar">
@@ -44,7 +50,6 @@
     <span class="d-non" id="SuccessMessage">@TempData["SuccessMessage"]</span>
 
     @* Scripts *@
-
     <partial name="_ThemeScript" />
     <script src="~/lib/bootbox.js/bootbox.min.js"></script>
     <script src="~/lib/sweetalert2/dist/sweetalert2.min.js"></script>

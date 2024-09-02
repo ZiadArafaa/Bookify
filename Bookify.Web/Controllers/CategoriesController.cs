@@ -28,7 +28,7 @@ namespace Bookify.Web.Controllers
         {
             return PartialView("_Form");
         }
-        [HttpPost, ValidateAntiForgeryToken]
+        [HttpPost]
         public async Task<IActionResult> Create(CategoryFormViewModel model)
         {
             if (!ModelState.IsValid || !bool.Parse((await ValidateDublicated(model)).Value!.ToString()!))
